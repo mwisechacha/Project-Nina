@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+</head>
+<body>
+    <h1>Request A Demo</h1>
+    <label for="Name">Name</label>
+    <input type="text" name="name" id="name" required>
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" required>
+    <label for="Reason">Reason for Demo</label>
+    <input type="radio" name="reason" id="reason" value="Research" required>
+    <input type="radio" name="reason" id="reason" value="Try it out" required>
+    <label for="Area of interest">Area of Interest</label>
+    <select name="interests" id="interests">
+        <option value="Machine learning">Machine Learning</option>
+        <option value="Deep learning">Deep Learning</option>
+        <option value="Computer vision">Computer Vision</option>
+        <option value="Medical imaging">Medical Imaging</option>
+        <option value="Other">Other</option>
+    </select>
+</body>
+</html>
