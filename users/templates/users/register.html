@@ -8,24 +8,44 @@
     <link rel="stylesheet" href="{% static 'css/styles.css'%}">
 </head>
 <body>
-    <div class="container">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="logo">
+                <img src="{% static 'images/nina-logo.png'%}" alt="logo">
+            </div>
         <h1>Register</h1>
-        <h2>Enter your email and password to register</h2>
+        <p>Enter your email and password to register</p>
+
         <form action="{% url 'register' %}" method="POST">
             {% csrf_token %}
-            <label for="username">Name</label>
-            <input type="text" name="name" id="name" required>
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" required>
-            <label for="organization">Organization</label>
-            <input type="text" name="organization" id="organization" required>
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" required>
-            <label for="password2">Confirm Password</label>
-            <input type="password" name="password2" id="password2" required>
-            <button type="submit">Register</button>
+            <div class="form-group">
+                <label for="username">Name</label>
+                <input type="text" name="name" id="name" placeholder="Enter your full name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" placeholder="example@gmail.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="organization">Organization</label>
+                <input type="text" name="organization" id="organization" placeholder="Enter your organization name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" placeholder="********" required>
+                <label for="password2">Confirm Password</label>
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="*********" required>
+            </div>
+            
+            <button type="submit" class="register-btn">Register</button>
         </form>
-        <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        <p class="footer-text">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
+        </div>
     </div>
     
 </body>
