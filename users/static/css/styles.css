@@ -59,3 +59,54 @@ body{
 label{
     font-family: 'Open Sans', sans-serif;
 }
+
+.register-card h1{
+    font-size: 24px;
+    margin-bottom: 5px;
+    color: black;
+}
+
+.register-card p{
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: black;
+}
+
+.form-group{
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label{
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+    color: black;
+    margin-bottom: 5px;
+}
+
+.form-group input{
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.3s;
+}
+
+.form-group input:focus{
+    border-color: #ff7b54;
+    box-shadow: 0 0 5px rgba(255, 89, 143, 0.5);
+}
+
+.register-btn{
+    width: 100%;
+    padding: 10px 15px;
+    border: none;
+    background-color: #ff7b54;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
