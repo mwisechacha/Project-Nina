@@ -1,0 +1,155 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body{
+    background-color: #FFEEF0;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+    /* height: 100vh; */
+}
+
+.logo-container img{
+    height: 60px;
+    width: auto;
+    padding: 24px 48px 18px 48px;
+}
+
+.container{
+    background-color: #FFEEF0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0;
+    gap: 84px;
+    /* padding: 20px; */
+}
+
+.left-section{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 48px;
+    width: 50%;
+    padding: 0 0 0 48px;
+    background-color: #FFEEF0;
+}
+
+.left-section h1{
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.6;
+    word-spacing: 5px;
+    font-weight: 600;
+    color: #000000;
+}
+
+.left-section h1 span{
+    color: #94126A;
+}
+
+u{
+    color: #94126A;
+}
+
+.left-section p{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    word-spacing: 24px;
+    /* line-height: 1.6; */
+    margin-bottom: 20px;
+    color: #000000;
+}
+
+.button-group{
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.button-group .btn{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #FF4C6A;
+    border: none;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.button-group .btn-upload{
+    background-color: #FF4C6A;
+}
+
+/* .button-group .btn-upload:hover{
+    background-color: #FF4C6A;
+    color: #FFFFFF;
+} */
+
+.button-group .btn-demo{
+    background-color: #FF4C6A;
+}
+
+/* .button-group .btn-demo:hover{
+    background-color: #FF4C6A;
+    color: #FFFFFF;
+} */
+
+.button-group .btn-demo svg{
+    margin-left: 8px;
+}
+
+.right-section{
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.right-section img{
+    width: 100%;
+    /* border-radius: 8px; */
+}
+
+.image-options{
+    background-color: white;
+}
+
+.image-options h3{
+    /* background-color: white; */
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    font-weight: 200;
+    margin-bottom: 20px;
+}
+
+.image-grid{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.image-grid .image-box{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 150px;
+    text-align: center;
+}
+
+.image-grid .image-box img{
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.image-grid .image-box span{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+}

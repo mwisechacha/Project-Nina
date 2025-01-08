@@ -5,25 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>home</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/home.css'%}">
 </head>
 <body>
-    <h1>Classify Image Using Automaitc Breast Mass Detector in Seconds</h1>
-    <h2>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sed viverra nibh.
-         Nunc auctor mollis tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
-         per inceptos himenaeos. Integer at erat est. Etiam id felis eget quam pulvinar semper. 
-         Curabitur vitae gravida orci. Proin semper lectus ac enim sodales volutpat.</h2>
-    <button>Upload Image</button>
-    <button>Request Demo</button>
-    <img src="#" alt="">
-    <h2>Or choose from the images below:</h2>
-    <div class="images">
-        <img src="#" alt="">
-        <img src="#" alt="">
-        <img src="#" alt="">
-        <img src="#" alt="">
-        <img src="#" alt="">
-        <img src="#" alt="">
+    <div class="logo-container">
+            <img src="{% static 'images/nina-logo.png'%}" alt="logo">
+        </div>
+    <div class="container">
+        <div class="left-section">
+            <h1>Classify Image Using <span><u>Automatic</u></span> Breast Mass Detector in 
+                <span><u>Seconds</u></span></h1>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris sed viverra nibh.
+                 Nunc auctor mollis tincidunt. Class aptent taciti sociosqu ad litora torquent per conubia nostra, 
+                 per inceptos himenaeos. Integer at erat est. Etiam id felis eget quam pulvinar semper. 
+                 Curabitur vitae gravida orci. Proin semper lectus ac enim sodales volutpat.
+            </p>
+    
+            <div class="button-group">
+                <a href="#" class="btn btn-upload">Upload Image</a>
+                <a href="#" class="btn btn-demo">Request Demo</a>
+            </div>
+        </div>
+        
+        <div class="right-section">
+            <img src="{% static 'images/breast-screening.png'%}" alt="Breast Cancer Screening">
+        </div>
+    </div>
+
+    <div class="image-options">
+        <h3>Choose from the images below:</h3>
+        <div class="image-grid">
+            <div class="image-box">
+                <img src="#" alt="normal image">
+                <span>Normal</span>
+            </div>
+            <div class="image-box">
+                <img src="#" alt="Benign image">
+                <span>Benign</span>
+            </div>
+            <div class="image-box">
+                <img src="#" alt="Malignant image">
+                <span>Malignant</span>
+            </div>
+        </div>
     </div>
 </body>
 </html>
