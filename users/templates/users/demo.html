@@ -5,24 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo</title>
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/styles.css'%}">
+    <link rel="stylesheet" href="{% static 'css/demo.css'%}">
 </head>
 <body>
-    <h1>Request A Demo</h1>
-    <label for="Name">Name</label>
-    <input type="text" name="name" id="name" required>
-    <label for="email">Email</label>
-    <input type="email" name="email" id="email" required>
-    <label for="Reason">Reason for Demo</label>
-    <input type="radio" name="reason" id="reason" value="Research" required>
-    <input type="radio" name="reason" id="reason" value="Try it out" required>
-    <label for="Area of interest">Area of Interest</label>
-    <select name="interests" id="interests">
-        <option value="Machine learning">Machine Learning</option>
-        <option value="Deep learning">Deep Learning</option>
-        <option value="Computer vision">Computer Vision</option>
-        <option value="Medical imaging">Medical Imaging</option>
-        <option value="Other">Other</option>
-    </select>
+    <div class="demo-container">
+        <div class="demo-card">
+            <div class="logo-container">
+                <img src="{% static 'images/nina-logo.png'%}" alt="logo">
+            </div>
+            <h2>Request A Demo</h2>
+            <form action="{% url 'request_demo' %}" method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="name" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" placeholder="example@gmail.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="reason">Reason for Demo</label>
+                    <div class="radio-group">
+                        <input type="radio" id="learn-more" name="reason" value="learn-more" required />
+                        <label for="learn-more">Learn More</label>
+                        <input type="radio" id="try-out" name="reason" value="try-out" required />
+                        <label for="try-out">Try it out</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                <label for="interest">Area of interest</label>
+                <select name="interest" id="interest" required>
+                    <option value="machine-learning">Machine Learning</option>
+                    <option value="data-analysis">Data Analysis</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="other">Other</option>
+                </select>
+                </div>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    
 </body>
 </html>
