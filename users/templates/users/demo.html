@@ -13,7 +13,7 @@
             <div class="logo-container">
                 <img src="{% static 'images/nina-logo.png'%}" alt="logo">
             </div>
-            <h2>Request A Demo</h2>
+            <h1>Request A Demo</h1>
             <form action="{% url 'request_demo' %}" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
@@ -28,12 +28,20 @@
                 
                 <div class="form-group">
                     <label for="reason">Reason for Demo</label>
-                    <div class="radio-group">
-                        <input type="radio" id="learn-more" name="reason" value="learn-more" required />
-                        <label for="learn-more">Learn More</label>
-                        <input type="radio" id="try-out" name="reason" value="try-out" required />
-                        <label for="try-out">Try it out</label>
+                    <div class="radio-flex">
+                        
+                            <label>
+                            <input type="radio" id="learn-more" name="reason" value="learn-more" required />
+                            Learn more
+                            </label>
+                        
+                            <label>
+                                <input type="radio" id="try-out" name="reason" value="try-out" required />
+                                Try out
+                            </label>
+                        
                     </div>
+                    
                 </div>
 
                 <div class="form-group">
