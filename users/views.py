@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -27,14 +28,15 @@ def register_view(request):
 # login view
 def login_view(request):
     if request.method == 'POST':
-        form = LoginForm(data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
+        email = request.POST['email']
+        password = request.POST['password']
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect(reverse('home'))
     else:
-        form = LoginForm()
-    return render(request, 'users/login.html', {'form': form})
+        return render(request, 'users/login.html', {'error': 'Invalid email or password.'})
+    return render(request, 'users/login.html')
 
 @login_required
 def logout_view(request):

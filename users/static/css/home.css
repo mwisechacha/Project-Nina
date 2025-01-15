@@ -77,7 +77,7 @@ u{
     padding: 12px 20px;
     font-size: 16px;
     font-weight: bold;
-    color: white;
+    /* color: white; */
     border: none;
     border-radius: 4px;
     text-decoration: none;
@@ -86,25 +86,34 @@ u{
 
 .button-group .btn-upload{
     background-color: #FF4C6A;
+    color: white;
 }
 
-/* .button-group .btn-upload:hover{
-    background-color: #FF4C6A;
-    color: #FFFFFF;
-} */
 
 .button-group .btn-demo{
-    background-color: #FF4C6A;
+    color: black;
+    display: flex;
+    align-items: center;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease;
 }
 
-/* .button-group .btn-demo:hover{
+.button-group .btn-demo:hover{
     background-color: #FF4C6A;
-    color: #FFFFFF;
-} */
-
-.button-group .btn-demo svg{
-    margin-left: 8px;
+    color: white;
 }
+
+.play-icon{
+    margin-right: 8px;
+    width: 30px;
+    height: 30px;
+}
+
+/* .request-demo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* gap: 10px; */
 
 .right-section{
     max-width: 50%;
