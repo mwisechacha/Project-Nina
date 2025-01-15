@@ -23,7 +23,7 @@ body{
     position: relative;
     background: #FFFFFF;
     width: 400px;
-    padding: 80px 36px 36px 36px;
+    padding: 40px 36px 36px 36px;
     border-radius: 10px;
     text-align: center;
 }
@@ -114,6 +114,22 @@ body{
     transition: 0.3s;
 }
 
+.error-messages {
+    margin-top: 10px;
+}
+
+.error p{
+    color: red;
+    font-size: 5px;
+}
+
+input:invalid{
+    border: 2px solid red;
+}
+
+input:valid{
+    border: 2px solid green;
+}
 
 a{
     text-decoration: none;

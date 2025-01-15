@@ -19,37 +19,95 @@
         <form action="{% url 'register' %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label for="username">Name</label>
-                <input type="text" name="name" id="name" placeholder="Enter your full name" required>
+                <label for="full_name">Name</label>
+                <input type="text" name="full_name" id="name" placeholder="Enter your full name" required>
+                {% for error in form.full_name.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
             
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" placeholder="example@gmail.com" required>
+                {% for error in form.email.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
             
             <div class="form-group">
                 <label for="organization">Organization</label>
                 <input type="text" name="organization" id="organization" placeholder="Enter your organization name" required>
+                {% for error in form.organization.errors%}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
             
             <div class="password-group">
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" name="password" id="password" placeholder="********" required>
+                    <label for="password1">Password</label>
+                    <input type="password" name="password1" id="password1" placeholder="********" required>
+                    {% for error in form.password1.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
                 <div class="form-group">
                     <label for="password2">Confirm Password</label>
-                    <input type="password" name="confirm_password" id="confirm_password" placeholder="*********" required>
+                    <input type="password" name="password2" id="password2" placeholder="*********" required>
+                    {% for error in form.password2.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
             </div>
             <button type="submit" class="register-btn">Register</button>
         </form>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error-messages">
+                    <p class="error">{{ message }}</p>
+            {% endfor %}
+                </div>
+        {% endif %}
         <p class="footer-text">
             Already have an account? <a href="{% url 'login' %}">Login</a>
         </p>
         </div>
     </div>
+    <script>
+        document.getElementById('email').addEventListener('input', function(event){
+            if (this.validity.typeMismatch) {
+                this.setCustomValidity('Please enter a valid email address.');
+                this.style.border = '1px solid red';
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+
+        document.getElementById('password').addEventListener('input', function(){
+            if (this.value.length >= 8) {
+                this.setCustomValidity('');
+                this.style.border = '1px solid green';
+            } else {
+                this.setCustomValidity('Password must be at least 8 characters.');
+                this.style.border = '1px solid red';
+            }
+        });
+        document.getElementById('confirm_password').addEventListener('input', function(){
+            var password = document.getElementById('password').value;
+            if (this.value === password) {
+                this.setCustomValidity('');
+                this.style.border = '1px solid green';
+            } else {
+                this.setCustomValidity('Passwords do not match.');
+                this.style.border = '1px solid red';
+            }
+        });
+        setTimeout(function(){
+            var errorMessages = document.querySelector('.error-messages');
+            if(errorMessages){
+                errorMessages.style.display = 'none';
+            }
+        }, 5000);
+    </script>
     
 </body>
 </html>

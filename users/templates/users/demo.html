@@ -55,6 +55,13 @@
                 </div>
 
                 <button type="submit">Submit</button>
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="error-messages">
+                            <p class="error">{{ message }}</p>
+                    {% endfor %}
+                        </div>
+                {% endif %}
             </form>
         </div>
     </div>

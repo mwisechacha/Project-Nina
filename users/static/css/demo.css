@@ -140,3 +140,12 @@ button{
     cursor: pointer;
     transition: 0.3s;
 }
+
+.error-messages {
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+}

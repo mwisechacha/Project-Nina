@@ -105,6 +105,15 @@ body{
     transition: 0.3s;
 }
 
+.error-messages{
+    margin-top: 10px;
+}
+
+.error{
+    color: red;
+    font-size: 14px;
+}
+
 .forgot-pass{
     display: flex;
     align-self: self-end;

@@ -18,9 +18,13 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('home')
+            form.save()
+            messages.success(request, 'Account created successfully. Please login.')
+            return redirect('login')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
@@ -28,14 +32,19 @@ def register_view(request):
 # login view
 def login_view(request):
     if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
+        form = LoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
             login(request, user)
-            return redirect(reverse('home'))
+            messages.success(request, 'Login successful.')
+            return redirect('home')
+        else:
+            print(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     else:
-        return render(request, 'users/login.html', {'error': 'Invalid email or password.'})
+        form = LoginForm()
     return render(request, 'users/login.html')
 
 @login_required
@@ -85,6 +94,8 @@ def request_demo_view(request):
                 messages.error(request, 'An error occurred while sending the email.')
 
             return redirect('home')
+        else:
+            messages.error(request, 'Please correct the errors.')
     else:
         form = RequestDemoForm()
     return render(request, 'users/demo.html', {'form': form})
