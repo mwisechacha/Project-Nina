@@ -20,6 +20,7 @@ body{
 }
 
 .login-card{
+    position: relative;
     background: #FFFFFF;
     width: 400px;
     padding: 80px 36px 36px 36px;
@@ -29,9 +30,9 @@ body{
 
 .logo-container{
     position: absolute;
-    top: 180px;
+    top: 0;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     background-color: #FFFFFF;
     border-radius: 100px;
     padding: 15px;
