@@ -140,27 +140,28 @@ u{
     margin-bottom: 20px;
 }
 
-.image-grid{
-    display: flex;
-    justify-content: center;
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 20px;
 }
 
 .image-grid .image-box{
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 150px;
+    width: 100%;
     text-align: center;
 }
 
-.image-grid .image-box img{
-    width: 100%;
-    border-radius: 4px;
-    margin-bottom: 10px;
+.image-box img {
+    max-width: 100%;
+    height: auto;
+    max-height: 400px;
+    object-fit: cover;
 }
 
-.image-grid .image-box span{
+.image-box span{
+    display: block;
     font-family: 'Open Sans', sans-serif;
     font-size: 14px;
     font-weight: bold;
