@@ -30,27 +30,27 @@ def register_view(request):
     return render(request, 'users/register.html', {'form': form})
 
 # login view
-def login_view(request):
-    if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)
-        if form.is_valid():
-            user = form.get_user()
-            login(request, user)
-            messages.success(request, 'Login successful.')
-            return redirect('home')
-        else:
-            print(form.errors)
-            for field, errors in form.errors.items():
-                for error in errors:
-                    messages.error(request, f"{field}: {error}")
-    else:
-        form = LoginForm()
-    return render(request, 'users/login.html')
+# def login_view(request):
+#     if request.method == 'POST':
+#         form = LoginForm(request, data=request.POST)
+#         if form.is_valid():
+#             user = form.get_user()
+#             login(request, user)
+#             messages.success(request, 'Login successful.')
+#             return redirect('home')
+#         else:
+#             print(form.errors)
+#             for field, errors in form.errors.items():
+#                 for error in errors:
+#                     messages.error(request, f"{field}: {error}")
+#     else:
+#         form = LoginForm()
+#     return render(request, 'users/login.html')
 
-@login_required
-def logout_view(request):
-    logout(request)
-    return redirect('login')
+# @login_required
+# def logout_view(request):
+#     logout(request)
+#     return redirect('login')
 
 # demo view
 def request_demo_view(request):

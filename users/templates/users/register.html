@@ -19,9 +19,9 @@
         <form action="{% url 'register' %}" method="POST">
             {% csrf_token %}
             <div class="form-group">
-                <label for="full_name">Name</label>
-                <input type="text" name="full_name" id="name" placeholder="Enter your full name" required>
-                {% for error in form.full_name.errors %}
+                <label for="username">Username</label>
+                <input type="text" name="username" id="username" placeholder="Enter your username" required>
+                {% for error in form.username.errors %}
                     <p class="error">{{ error }}</p>
                 {% endfor %}
             </div>
@@ -73,12 +73,23 @@
         </div>
     </div>
     <script>
+    document.addEventListener('DOMContentLoaded', function(){
+        document.getElementById('username').addEventListener('input', function(){
+            if (this.value.length >= 5) {
+                this.setCustomValidity('');
+                this.style.border = '1px solid green';
+            } else {
+                this.setCustomValidity('Username must be at least 5 characters.');
+                this.style.border = '1px solid red';
+            }
+        });
         document.getElementById('email').addEventListener('input', function(event){
             if (this.validity.typeMismatch) {
                 this.setCustomValidity('Please enter a valid email address.');
                 this.style.border = '1px solid red';
             } else {
                 this.setCustomValidity('');
+                this.style.border = '1px solid green';
             }
         });
 
@@ -107,6 +118,7 @@
                 errorMessages.style.display = 'none';
             }
         }, 5000);
+    });
     </script>
     
 </body>
