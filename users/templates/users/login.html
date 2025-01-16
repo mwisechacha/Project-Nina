@@ -32,7 +32,7 @@
                             <p class="error">{{ error }}</p>
                         {% endfor %}
                     </div>
-                    <a class="forgot-pass" href="#">Forgot Password?</a>
+                    <a class="forgot-pass" href="{% url 'password_reset' %}">Forgot Password?</a>
             
                 <button class="login-btn">Sign In</button>
                 <!-- {% if messages %}

@@ -122,15 +122,6 @@ body{
     color: red;
     font-size: 5px;
 }
-
-input:invalid{
-    border: 2px solid red;
-}
-
-input:valid{
-    border: 2px solid green;
-}
-
 a{
     text-decoration: none;
     color: #94126A;
