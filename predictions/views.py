@@ -8,15 +8,15 @@ from .models import Mammogram
 def upload_mammogram(request):
     if request.method == 'POST':
         form = MammogramForm(request.POST, request.FILES)
-        if form.is_valid():
-            mammogram = form.save()
-            return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.id]))
+        # if form.is_valid():
+        #     mammogram = form.save()
+        #     return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.id]))
     else:
         form = MammogramForm()
     return render(request, 'predictions/upload_image.html', {'form': form})
 
-def processing_view(request, mammogram_id):
-    mammogram = Mammogram.objects.get(pk=mammogram_id)
+def processing_view(request):
+    # mammogram = Mammogram.objects.get(pk=mammogram_id)
 
     # process the mammogram
     

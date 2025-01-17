@@ -3,11 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processing</title>
+    <title>Processing Image</title>
     {% load static %}
+    <link rel="stylesheet" href="{% static 'css/process_image.css' %}">
 </head>
 <body>
-    
-    
+    <div class="logo-container">
+        <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+    </div>
+    <div class="loading-container">
+        <img src="{% static 'images/hourglass.png' %}" alt="hourglass animation">
+        <p>Running Model Hang tight!</p>
+    </div>
 </body>
 </html>
