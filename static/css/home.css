@@ -26,6 +26,10 @@ body{
     margin: 0;
 }
 
+.hero {
+    min-height: calc(100vh - 106px);
+}
+
 .left-section{
     display: flex;
     flex-direction: column;
@@ -37,7 +41,8 @@ body{
 
 .left-section h1{
     font-family: 'Poppins', sans-serif;
-    line-height: 1.6;
+    font-size: 3.5rem;
+    line-height: 1.4;
     word-spacing: 5px;
     max-width: 20ch;
     font-weight: 600;
@@ -54,7 +59,7 @@ u{
 
 .left-section p{
     font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
+    font-size: 24px;
     font-weight: 400;
     word-spacing: 5px;
     max-width: 55ch;
@@ -70,13 +75,13 @@ u{
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
-    font-size: 16px;
+    padding: 16px 40px;
+    font-size: 21px;
+    white-space: nowrap;
     font-weight: bold;
     border: none;
     border-radius: 4px;
     text-decoration: none;
-    transition: background-color 0.3s ease;
 }
 
 .button-group .btn-upload{
@@ -93,10 +98,10 @@ u{
     transition: background-color 0.3s ease;
 }
 
-.button-group .btn-demo:hover{
+/* .button-group .btn-demo:hover{
     background-color: #FF4C6A;
     color: white;
-}
+} */
 
 .play-icon{
     margin-right: 8px;
@@ -106,9 +111,11 @@ u{
 
 .right-section{
     max-width: 50%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 }
 
 .right-section img{
@@ -118,6 +125,7 @@ u{
 }
 
 .image-options{
+    padding: 48px;
     background-color: white;
 }
 
@@ -134,24 +142,41 @@ u{
     gap: 20px;
 }
 
-.image-grid .image-box{
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    text-align: center;
-}
-
-.image-box img {
+.image-grid img {
     max-width: 100%;
     height: auto;
-    max-height: 400px;
+    aspect-ratio: 2/3;
     object-fit: cover;
 }
 
-.image-box span{
-    display: block;
-    font-family: 'Open Sans', sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-    color: white;
+
+@media (max-width: 1023px) {
+    .hero {
+        flex-direction: column-reverse;
+    }
+    .left-section {
+        gap: 16px;
+        padding: 24px 16px;
+        align-items: center;
+        text-align: center;
+    }
+     .left-section h1 {
+        font-size: 2rem;
+        margin-bottom: 0;
+     }
+        .left-section p {
+            font-size: 18px;
+        }
+        .right-section{
+            max-width: 100%;
+            max-height: 60vh;
+
+        }
+        .button-group .btn{
+            padding: 12px 24px;
+            font-size: 18px;
+        }
+        .image-options{
+            padding: 16px;
+        }
 }
