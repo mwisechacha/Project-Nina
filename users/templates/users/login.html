@@ -15,7 +15,13 @@
             </div>
                 <h1>Sign In</h1>
                 <p>Enter your email and password to sign in</p>
-            
+                {% if messages %}
+                    <div class="error-messages">
+                        {% for message in messages %}
+                                <p class="error">{{message}}</p>
+                            {% endfor %}
+                    </div>
+                        {% endif %}
                 <form action="{% url 'login' %}" method="POST">
                     {% csrf_token %}
                     <div class="form-group">
@@ -35,22 +41,18 @@
                     <a class="forgot-pass" href="{% url 'password_reset' %}">Forgot Password?</a>
             
                 <button class="login-btn">Sign In</button>
-                <!-- {% if messages %}
-                    <div class="error-messages">
-                        {% for message in messages %}
-                                <p class="error">{{message}}</p>
-                            {% endfor %}
-                    </div>
-                            
-                        {% endif %} -->
             </form>
-            
-                <div class="footer-text">
-                    <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
+            <div class="footer-text">
+                <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
             </div>
-            
         </div>
-        
     </div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(() => {
+            document.querySelector('.error-messages').style.display = 'none';
+        }, 5000);
+    });
+</script>
 </html>

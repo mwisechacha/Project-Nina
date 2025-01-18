@@ -128,5 +128,15 @@ a{
     color: #94126A;
 }
 
+input.error{
+    border-color: red;
+}
+
+p.error {
+    color: red;
+    font-size: 14px;
+    margin: 16px 8px;
+}
+
 
 

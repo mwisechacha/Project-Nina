@@ -20,42 +20,32 @@
             {% csrf_token %}
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" name="username" id="username" placeholder="Enter your username" required>
-                {% for error in form.username.errors %}
-                    <p class="error">{{ error }}</p>
-                {% endfor %}
+                <input type="text" name="username" id="username" placeholder="Enter your username" required
+                class="{% if form.username.errors %}error{% endif %}">
             </div>
             
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" name="email" id="email" placeholder="example@gmail.com" required>
-                {% for error in form.email.errors %}
-                    <p class="error">{{ error }}</p>
-                {% endfor %}
+                <input type="email" name="email" id="email" placeholder="example@gmail.com" required 
+                class="{% if form.email.errors %}error{% endif %}">
             </div>
             
             <div class="form-group">
                 <label for="organization">Organization</label>
                 <input type="text" name="organization" id="organization" placeholder="Enter your organization name" required>
-                {% for error in form.organization.errors%}
-                    <p class="error">{{ error }}</p>
-                {% endfor %}
             </div>
             
             <div class="password-group">
                 <div class="form-group">
                     <label for="password1">Password</label>
-                    <input type="password" name="password1" id="password1" placeholder="********" required>
-                    {% for error in form.password1.errors %}
-                        <p class="error">{{ error }}</p>
-                    {% endfor %}
+                    <input type="password" name="password1" id="password1" placeholder="********" required
+                    class="{% if form.password1.errors %}error{% endif %}">
                 </div>
                 <div class="form-group">
                     <label for="password2">Confirm Password</label>
-                    <input type="password" name="password2" id="password2" placeholder="*********" required>
-                    {% for error in form.password2.errors %}
-                        <p class="error">{{ error }}</p>
-                    {% endfor %}
+                    <input type="password" name="password2" id="password2" placeholder="*********" required
+                    class="{% if form.password2.errors %}error{% endif %}"
+                    >
                 </div>
             </div>
             <button type="submit" class="register-btn">Register</button>

@@ -118,10 +118,6 @@ body{
     margin-top: 10px;
 }
 
-.error p{
-    color: red;
-    font-size: 5px;
-}
 a{
     text-decoration: none;
     color: #94126A;
@@ -129,4 +125,14 @@ a{
 
 .footer-text a:hover{
     text-decoration: underline;
+}
+
+input.error{
+    border-color: red;
+}
+
+p.error {
+    color: red;
+    font-size: 14px;
+    margin: 16px 8px;
 }
