@@ -1,6 +1,8 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
 from .views import register_view, home_view, request_demo_view
+from predictions.views import upload_mammogram, processing_view, results_view
+
 
 urlpatterns = [
     path('register/', register_view, name='register'),

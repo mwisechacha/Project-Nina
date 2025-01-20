@@ -1,30 +1,34 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib import messages
 from .forms import MammogramForm
 from .models import Mammogram
+from .predictions import predict
+
 
 
 def upload_mammogram(request):
     if request.method == 'POST':
         form = MammogramForm(request.POST, request.FILES)
-        # if form.is_valid():
-        #     mammogram = form.save()
-        #     return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.id]))
+        if form.is_valid():
+            mammogram = form.save()
+            messages.success(request, 'Mammogram uploaded successfully.')
+            return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
     else:
         form = MammogramForm()
     return render(request, 'predictions/upload_image.html', {'form': form})
 
-def processing_view(request):
-    # mammogram = Mammogram.objects.get(pk=mammogram_id)
+def processing_view(request, mammogram_id):
+    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
 
-    # process the mammogram
+    prediction_result = predict(mammogram.image.path)
+    mammogram.model_diagnosis = prediction_result
+    mammogram.save()
     
-    return render(request, 'predictions/process_image.html')
+    return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
 
 def results_view(request, mammogram_id):
-    mammogram = Mammogram.objects.get(pk=mammogram_id)
+    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
 
-    # get the results of the mammogram
-
-    return render(request, 'predictions/results.html')
+    return render(request, 'predictions/results.html' , {'mammogram': mammogram})

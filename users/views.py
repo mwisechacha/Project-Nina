@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from .forms import RegisterForm, LoginForm, RequestDemoForm
+from .forms import RegisterForm, RequestDemoForm
 from django.core.mail import EmailMessage
 from django.conf import settings
 import os
@@ -28,29 +28,6 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
-
-# login view
-# def login_view(request):
-#     if request.method == 'POST':
-#         form = LoginForm(request, data=request.POST)
-#         if form.is_valid():
-#             user = form.get_user()
-#             login(request, user)
-#             messages.success(request, 'Login successful.')
-#             return redirect('home')
-#         else:
-#             print(form.errors)
-#             for field, errors in form.errors.items():
-#                 for error in errors:
-#                     messages.error(request, f"{field}: {error}")
-#     else:
-#         form = LoginForm()
-#     return render(request, 'users/login.html')
-
-# @login_required
-# def logout_view(request):
-#     logout(request)
-#     return redirect('login')
 
 # demo view
 def request_demo_view(request):

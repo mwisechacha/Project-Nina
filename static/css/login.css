@@ -121,6 +121,7 @@ body{
 
 .footer-text p{
     margin-bottom: 0;
+    text-align: center;
 }
 
 a{
@@ -133,8 +134,8 @@ input.error{
 }
 
 p.error {
-    color: red;
-    font-size: 14px;
+    color: green;
+    font-size: 18px;
     margin: 16px 8px;
 }
 

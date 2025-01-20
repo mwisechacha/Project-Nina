@@ -26,22 +26,24 @@
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="username">username</label>
-                        <input type="username" name="username" id="username" required>
-                        {% for error in form.username.errors %}
-                            <p class="error">{{ error }}</p>
-                        {% endfor %}
+                        <input type="username" name="username" id="username" required
+                        class="{% if form.username.errors %}error{% endif %}">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" name="password" id="password" placeholder="*********" required>
-                        {% for error in form.password.errors %}
-                            <p class="error">{{ error }}</p>
-                        {% endfor %}
-                    </div>
+                        <input type="password" name="password" id="password" placeholder="*********" required
+                        class="{% if form.password.errors %}error{% endif %}">
                     <a class="forgot-pass" href="{% url 'password_reset' %}">Forgot Password?</a>
             
                 <button class="login-btn">Sign In</button>
             </form>
+            {% if messages %}
+                <div class="error-messages">
+                    {% for message in messages %}
+                        <p class="error">{{message}}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="footer-text">
                 <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
             </div>
