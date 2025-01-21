@@ -5,7 +5,7 @@ from django.contrib import messages
 from .forms import MammogramForm
 from .models import Mammogram
 from .predictions import predict
-
+import time
 
 
 def upload_mammogram(request):
@@ -21,14 +21,20 @@ def upload_mammogram(request):
 
 def processing_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
+    return render(request, 'predictions/process_image.html', {'mammogram_id': mammogram_id})
+
+def predict_and_redirect_view(request, mammogram_id):
+    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
 
     prediction_result = predict(mammogram.image.path)
     mammogram.model_diagnosis = prediction_result
     mammogram.save()
-    
+
     return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
+    
 
 def results_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
 
-    return render(request, 'predictions/results.html' , {'mammogram': mammogram})
+    return render(request, 'predictions/results.html' , {'mammogram': mammogram,
+                                                         'prediction': mammogram.model_diagnosis})

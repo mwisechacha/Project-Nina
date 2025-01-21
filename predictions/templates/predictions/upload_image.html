@@ -11,13 +11,6 @@
     <div class="logo-container">
         <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
     </div>
-    {% if messages %}
-        <div class="error-messages">
-            {% for message in messages %}
-                <p class="error">{{ message }}</p>
-            {% endfor %}
-        </div>
-        {% endif %}
     <div class="upload-container">
         <form id="upload-form" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
