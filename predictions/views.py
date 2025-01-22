@@ -13,7 +13,7 @@ def upload_mammogram(request):
         form = MammogramForm(request.POST, request.FILES)
         if form.is_valid():
             mammogram = form.save()
-            messages.success(request, 'Mammogram uploaded successfully.')
+            # messages.success(request, 'Mammogram uploaded successfully.')
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
     else:
         form = MammogramForm()
