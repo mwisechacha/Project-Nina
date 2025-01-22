@@ -42,6 +42,7 @@ body{
 .results-container{
     display: flex;
     justify-content: space-between;
+    padding-bottom: 40px;
 }
 
 .model-results{
@@ -58,6 +59,10 @@ body{
 .diagnosis{
     font-family: 'Poppins', sans-serif;
     text-align: center;
+}
+
+h1{
+    margin: 0;
 }
 
 ul{
