@@ -9,72 +9,77 @@
 </head>
 <body>
     <div class="top-section">
-    <div class="logo-report-section">
-        <div class="logo-container">
-            <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+        <!-- <div class="logo-report-section"> -->
+            <div class="logo-container">
+                <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            </div>
+            <div class="btn">
+                <button class="btn-download">Download Report</button>
+            </div>
         </div>
-        <div class="btn">
-            <button class="btn-download">Download Report</button>
-        </div>
-    </div>
 
-    <div class="results-container">
-        <div class="results">
-            <div class="tab">
-                <a href="#">Data Summary</a>
-                <a href="#" class="active">Model Results</a>
-                <a href="#">BI-RADS Statistics</a>
-
-            <section class="model-results">
-            <p>Pathology</p>
-            <h1 class="diagnosis">{{prediction}}</h1>
-            <h1>Model Performance Metrics</h1>
-            <ul>
-                <div class="metrics">
-                    <li>Sensitivity</li>
-                    <li>Specificity</li>
-                    <li>AUC/ROC</li>
+        <div class="results-container">
+            <div class="left-side">
+                <div class="nav-links">
+                    <a href="#" class="nav-link">Data Summary</a>
+                    <a href="#" class="nav-link active">Model Results</a>
+                    <a href="#" class="nav-link">BI-RADS Statistics</a>
                 </div>
-                <div class="num-metrics">
-                    <li>0.74</li>
-                    <li>0.74</li>
-                    <li>0.74</li>
-                </div> 
-            </ul>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Precision</th>
-                        <th>Recall</th>
-                        <th>F1 Score</th>
-                    </tr>
-                    <tr>
-                        <td>1</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                    </tr>
-                    <tr>
-                        <td>Total</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                        <td>0.74</td>
-                    </tr>
-                </thead>
-            </table>
-        </section>
+                <section class="model-results">
+                    <p>Pathology</p>
+                    <h1 class="diagnosis">{{prediction}}</h1>
+                    <h1>Model Performance Metrics</h1>
+                    <ul>
+                        <div class="metrics">
+                            <li>Sensitivity</li>
+                            <li>Specificity</li>
+                            <li>AUC/ROC</li>
+                        </div>
+                        <div class="num-metrics">
+                            <li>0.74</li>
+                            <li>0.74</li>
+                            <li>0.74</li>
+                        </div> 
+                    </ul>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Precision</th>
+                                <th>Recall</th>
+                                <th>F1 Score</th>
+                            </tr>
+                            <tr>
+                                <td>1</td>
+                                <td>0.74</td>
+                                <td>0.74</td>
+                                <td>0.74</td>
+                            </tr>
+                            <tr>
+                                <td>Total</td>
+                                <td>0.74</td>
+                                <td>0.74</td>
+                                <td>0.74</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </section>
+            </div>
+                <div class="image">
+                    <img src="{{ mammogram.image.url }}" alt="Mammogram Image">
+                </div>
         </div>
-        </div>
-    
-        <div class="image">
-            <img src="{{ mammogram.image.url }}" alt="Mammogram Image">
-        </div>
-    </div>
-</div>
 
     <footer>
         <h3>Advanced Analytics</h3>
     </footer>  
+    <script>
+        document.querySelector('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                document.querySelector('.nav-link').forEach(item => item.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>

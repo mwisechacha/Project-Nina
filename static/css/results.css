@@ -3,11 +3,15 @@ body{
     background-color: white;
     margin: 0;
     padding: 0;
+
 }
 
-.logo-report-section{
+.top-section{
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    /* gap: 36px; */
     background-color: #FFEEF0;
 }
 
@@ -20,7 +24,7 @@ body{
 }
 
 .btn-download{
-    padding: 10px 15px;
+    padding: 10px 20px;
     background-color: #FF4C6A;
     color: white;
     border: none;
@@ -28,27 +32,61 @@ body{
 }
 
 .logo-container img{
-    height: 60px;
-    width: auto;
+    max-height: 50px;
 }
 
-.top-section{
-    display: flex;
-    flex-direction: column;
-    gap: 36px;
-    background-color: #FFEEF0;
-}
 
 .results-container{
     display: flex;
+    flex-direction: row;
     justify-content: space-between;
-    padding-bottom: 40px;
+    width: 100%;
+    padding: 20px;
+    background-color: #FFEEF0;
+}
+
+.left-side{
+    display: flex;
+    flex-direction: column;
+    flex: 2;
+    width: 70%;
+    margin-right: 40px;
+}
+
+.nav-links{
+    display: flex;
+    justify-content: flex-start;
+    gap: 40px;
+    border-bottom: 2px solid #B3B3B3;
+    margin-bottom: 20px;
+    width: 67.5%;
+}
+
+.nav-link{
+    text-decoration: none;
+    color: black;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    padding: 10px;
+    position: relative;
+}
+
+.nav-link.active{
+    color: #94126A;
+}
+
+.nav-link.active::after{
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 100%;
+    height: 2px;
+    background-color: #94126A;
 }
 
 .model-results{
-    display: flex;
-    flex-direction: column;
-    padding-left: 20px;
+    width: 70%;
 }
 
 .model-results p{
@@ -56,14 +94,33 @@ body{
     text-align: center;
 }
 
-.diagnosis{
-    font-family: 'Poppins', sans-serif;
-    text-align: center;
-    padding-bottom: 20px;
+.image{
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    max-width: 50%;
 }
 
-h1{
-    margin: 0;
+.details{
+    flex: 1;
+    margin-right: 20px;
+}
+
+.details h1{
+    color: black;
+}
+
+.details p.diagnosis{
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+    padding: 0;
+}
+
+.diagnosis{
+    text-align: center;
 }
 
 ul{
@@ -98,54 +155,20 @@ ul li{
     text-align: center;
 }
 
-
-.tab a{
-    font-size: 1.5rem;
-    text-decoration: none;
-    color: black;
-    padding-left: 20px;
-    
-}
-
-.tab a.active{
-    color: #94126A;
-    text-decoration: underline;
-    font-weight: bold;
-}
-
-.results{
-    display: flex;
-    justify-content: space-between;
-}
-
-.details{
-    flex: 1;
-    margin-right: 20px;
-}
-
-.details h1{
-    color: black;
-}
-
-.details p.diagnosis{
-    font-size: 1.5rem;
-    font-weight: bold;
-    padding: 0;
-}
-
 table{
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
     text-align: center;
-    padding-top: 20px;
+    padding: 10px;
     border: 1px solid #B3B3B3;
     border-radius: 10px;
-    /* overflow: hidden;  */
 }
 
 th td{
     border-left: none;
     border-right: none;
+    padding: 10px;
 }
 
 tr{
@@ -154,32 +177,6 @@ tr{
 
 table th{
     font-weight: bold;
-}
-
-/* apply border radius */
-table tr:first-child th:first-child {
-    border-top-left-radius: 20px;
-}
-
-table tr:first-child th:last-child {
-    border-top-right-radius: 10px;
-}
-
-table tr:last-child td:first-child {
-    border-bottom-left-radius: 10px;
-}
-
-table tr:last-child td:last-child {
-    border-bottom-right-radius: 10px;
-}
-
-.image{
-    max-width: 50%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
 }
 
 .image img{
