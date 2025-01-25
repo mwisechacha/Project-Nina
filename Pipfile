@@ -8,6 +8,8 @@ django = "*"
 mysqlclient = "*"
 torch = "*"
 torchvision = "*"
+gdown = "*"
+pandas = "*"
 
 [dev-packages]
 
