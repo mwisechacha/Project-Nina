@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.contrib import messages
 from .forms import MammogramForm
 from .models import Mammogram
-from .predictions import predict
+from .predictions import predict, get_mammogram_stats, calculate_metrics
 import time
 
 
@@ -36,5 +36,16 @@ def predict_and_redirect_view(request, mammogram_id):
 def results_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
 
+    # query metrics
+    benign_count, malignant_count, total_count = get_mammogram_stats()
+    accuracy, precision, recall, f1_score = calculate_metrics()
+
     return render(request, 'predictions/results.html' , {'mammogram': mammogram,
-                                                         'prediction': mammogram.model_diagnosis})
+                                                         'prediction': mammogram.model_diagnosis,
+                                                         'benign_count': benign_count,
+                                                         'malignant_count': malignant_count,
+                                                         'total_count': total_count,
+                                                         'accuracy': accuracy,
+                                                         'precision': precision,
+                                                         'recall': recall,
+                                                         'f1_score': f1_score})

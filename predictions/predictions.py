@@ -4,6 +4,8 @@ import torchvision.models as models
 from torchvision import transforms
 import numpy as np
 from PIL import Image
+from django.db.models import  Count, Q
+from .models import GroundTruth
 
 def load_model():
     model = models.resnet18(pretrained=True)
@@ -63,3 +65,23 @@ def predict(image_file):
     prediction_label = LABELS[preds.item()]
 
     return prediction_label
+
+def get_mammogram_stats():
+    benign_count = GroundTruth.objects.filter(model_diagnosis='Benign').count()
+    malignant_count = GroundTruth.objects.filter(model_diagnosis='Malignant').count()
+    total_count = GroundTruth.objects.all().count()
+
+    return benign_count, malignant_count, total_count
+
+def calculate_metrics():
+    true_positives = GroundTruth.objects.filter(Q(model_diagnosis='Malignant') & Q(label=1)).count()
+    true_negatives = GroundTruth.objects.filter(Q(model_diagnosis='Benign') & Q(label=0)).count()
+    false_positives = GroundTruth.objects.filter(Q(model_diagnosis='Malignant') & Q(label=0)).count()
+    false_negatives = GroundTruth.objects.filter(Q(model_diagnosis='Benign') & Q(label=1)).count()
+
+    accuracy = (true_positives + true_negatives) / (true_positives + true_negatives + false_positives + false_negatives)
+    precision = true_positives / (true_positives + false_positives)
+    recall = true_positives / (true_positives + false_negatives)
+    f1_score = 2 * (precision * recall) / (precision + recall)
+
+    return accuracy, precision, recall, f1_score
