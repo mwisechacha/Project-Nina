@@ -67,17 +67,17 @@ def predict(image_file):
     return prediction_label
 
 def get_mammogram_stats():
-    benign_count = GroundTruth.objects.filter(model_diagnosis='Benign').count()
-    malignant_count = GroundTruth.objects.filter(model_diagnosis='Malignant').count()
+    benign_count = GroundTruth.objects.filter(label=0).count()
+    malignant_count = GroundTruth.objects.filter(label=1).count()
     total_count = GroundTruth.objects.all().count()
 
     return benign_count, malignant_count, total_count
 
 def calculate_metrics():
-    true_positives = GroundTruth.objects.filter(Q(model_diagnosis='Malignant') & Q(label=1)).count()
-    true_negatives = GroundTruth.objects.filter(Q(model_diagnosis='Benign') & Q(label=0)).count()
-    false_positives = GroundTruth.objects.filter(Q(model_diagnosis='Malignant') & Q(label=0)).count()
-    false_negatives = GroundTruth.objects.filter(Q(model_diagnosis='Benign') & Q(label=1)).count()
+    true_positives = GroundTruth.objects.filter(Q(label=1) & Q(label=1)).count()
+    true_negatives = GroundTruth.objects.filter(Q(label=0) & Q(label=0)).count()
+    false_positives = GroundTruth.objects.filter(Q(label=1) & Q(label=0)).count()
+    false_negatives = GroundTruth.objects.filter(Q(label=0) & Q(label=1)).count()
 
     sensitivity = true_positives / (true_positives + false_negatives)
     specificity = true_negatives / (true_negatives + false_positives)
