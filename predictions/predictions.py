@@ -79,9 +79,12 @@ def calculate_metrics():
     false_positives = GroundTruth.objects.filter(Q(model_diagnosis='Malignant') & Q(label=0)).count()
     false_negatives = GroundTruth.objects.filter(Q(model_diagnosis='Benign') & Q(label=1)).count()
 
+    sensitivity = true_positives / (true_positives + false_negatives)
+    specificity = true_negatives / (true_negatives + false_positives)
+
     accuracy = (true_positives + true_negatives) / (true_positives + true_negatives + false_positives + false_negatives)
     precision = true_positives / (true_positives + false_positives)
     recall = true_positives / (true_positives + false_negatives)
     f1_score = 2 * (precision * recall) / (precision + recall)
 
-    return accuracy, precision, recall, f1_score
+    return accuracy, precision, recall, f1_score, sensitivity, specificity

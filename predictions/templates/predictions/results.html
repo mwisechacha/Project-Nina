@@ -21,11 +21,32 @@
         <div class="results-container">
             <div class="left-side">
                 <div class="nav-links">
-                    <a href="#" class="nav-link">Data Summary</a>
-                    <a href="#" class="nav-link active">Model Results</a>
-                    <a href="#" class="nav-link">BI-RADS Statistics</a>
+                    <a href="#" class="nav-link" data-target="data-summary">Data Summary</a>
+                    <a href="#" class="nav-link active" data-target="model-results">Model Results</a>
+                    <a href="#" class="nav-link" data-target="birads-statistics">BI-RADS Statistics</a>
                 </div>
-                <section class="model-results">
+                <h1>Data Summary</h1>
+                <section id="data-summary" class="content-section" style="display: none;">
+                    <p>Summary of the data used for the model</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Benign</th>
+                                <th>Malignant</th>
+                                <th>Total</th>
+                            </tr>
+                            <tr>
+                                <td>Count</td>
+                                <td>{{benign_count}}</td>
+                                <td>{{malignant_count}}</td>
+                                <td>{{total_count}}</td>
+                            </tr>
+                        </thead>
+                    </table>
+                </section>
+
+                <section id="model-results" class="content-section">
                     <p>Pathology</p>
                     <h1 class="diagnosis">{{prediction}}</h1>
                     <h1>Model Performance Metrics</h1>
@@ -36,8 +57,8 @@
                             <li>AUC/ROC</li>
                         </div>
                         <div class="num-metrics">
-                            <li>0.74</li>
-                            <li>0.74</li>
+                            <li>{{sensitivity}}</li>
+                            <li>{{specificity}}</li>
                             <li>0.74</li>
                         </div> 
                     </ul>
@@ -51,9 +72,9 @@
                             </tr>
                             <tr>
                                 <td>1</td>
-                                <td>0.74</td>
-                                <td>0.74</td>
-                                <td>0.74</td>
+                                <td>{{precision}}</td>
+                                <td>{{recall}}</td>
+                                <td>{{f1_score}}</td>
                             </tr>
                             <tr>
                                 <td>Total</td>
@@ -63,6 +84,10 @@
                             </tr>
                         </thead>
                     </table>
+                </section>
+                
+                <section id="birads-statistics" class="content-section" style="display: none;">
+                    <p>BI-RADS Statistics</p>
                 </section>
             </div>
                 <div class="image">
@@ -75,9 +100,15 @@
     </footer>  
     <script>
         document.querySelector('.nav-link').forEach(link => {
-            link.addEventListener('click', () => {
-                document.querySelector('.nav-link').forEach(item => item.classList.remove('active'));
-                link.classList.add('active');
+            link.addEventListener('click', function(event){
+                event.preventDefault();
+                document.querySelector('.nav-link').forEach(link => link.classList.remove('active'));
+                this.classList.add('active');
+           
+
+                document.querySelector('.content-section').forEach(sections => section.style.display = 'none');
+                const target = link.getAttribute('data-target');
+                document.getElementById.style.display = 'block';
             });
         });
     </script>

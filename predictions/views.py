@@ -38,14 +38,20 @@ def results_view(request, mammogram_id):
 
     # query metrics
     benign_count, malignant_count, total_count = get_mammogram_stats()
-    accuracy, precision, recall, f1_score = calculate_metrics()
+    accuracy, precision, recall, f1_score, sensitivity, specificity = calculate_metrics()
 
-    return render(request, 'predictions/results.html' , {'mammogram': mammogram,
-                                                         'prediction': mammogram.model_diagnosis,
-                                                         'benign_count': benign_count,
-                                                         'malignant_count': malignant_count,
-                                                         'total_count': total_count,
-                                                         'accuracy': accuracy,
-                                                         'precision': precision,
-                                                         'recall': recall,
-                                                         'f1_score': f1_score})
+    context = {
+        'mammogram': mammogram,
+        'prediction': mammogram.model_diagnosis,
+        'benign_count': benign_count,
+        'malignant_count': malignant_count,
+        'total_count': total_count,
+        'accuracy': accuracy,
+        'precision': precision,
+        'recall': recall,
+        'f1_score': f1_score,
+        'sensitivity': sensitivity,
+        'specificity': specificity
+    }
+
+    return render(request, 'predictions/results.html' , context)
