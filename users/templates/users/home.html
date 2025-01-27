@@ -49,10 +49,18 @@
     <div class="image-options">
         <h3>Choose from the images below:</h3>
         <div class="image-grid">
-            <img src="{% static 'images/mammograms/1-075.jpg' %}" alt="Mammogram image">
-            <img src="{% static 'images/mammograms/1-126.jpg' %}" alt="Mammogram image">
-            <img src="{% static 'images/mammograms/1-231.jpg' %}" alt="Mammogram image">
-            <img src="{% static 'images/mammograms/1-285.jpg' %}" alt="Mammogram image">
+            <a href="{% url 'register' %}?image_id=1-075">
+                <img src="{% static 'images/mammograms/1-075.jpg' %}" alt="Mammogram image">
+            </a>
+            <a href="{% url 'register' %}?image_id=1-126">
+                <img src="{% static 'images/mammograms/1-126.jpg' %}" alt="Mammogram image">
+            </a>
+            <a href="{% url 'register' %}?image_id=1-231">
+                <img src="{% static 'images/mammograms/1-231.jpg' %}" alt="Mammogram image">
+            </a>
+            <a href="{% url 'register' %}?image_id=1-285">
+                <img src="{% static 'images/mammograms/1-285.jpg' %}" alt="Mammogram image">
+            </a>
         </div>
     </div>
 </body>

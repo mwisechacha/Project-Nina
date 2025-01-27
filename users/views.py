@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
@@ -15,12 +16,16 @@ def home_view(request):
 
 # register view
 def register_view(request):
+    image_id = request.GET.get('image_id')
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Account created successfully. Please login.')
-            return redirect('login')
+            if image_id:
+                return HttpResponseRedirect(reverse('upload_mammogram', f'?image_id={image_id}'))
+            else:
+                return redirect('login')
         else:
             for field, errors in form.errors.items():
                 for error in errors:

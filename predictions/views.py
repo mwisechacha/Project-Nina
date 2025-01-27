@@ -6,9 +6,12 @@ from .forms import MammogramForm
 from .models import Mammogram
 from .predictions import predict, get_mammogram_stats, calculate_metrics
 import time
+import os
+from django.conf import settings
 
 
 def upload_mammogram(request):
+    image_id = request.GET.get('image_id')
     if request.method == 'POST':
         form = MammogramForm(request.POST, request.FILES)
         if form.is_valid():
@@ -16,7 +19,15 @@ def upload_mammogram(request):
             # messages.success(request, 'Mammogram uploaded successfully.')
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
     else:
-        form = MammogramForm()
+        if image_id:
+            image_path = os.path.join(settings.MEDIA_ROOT, 'images', f'images/mammograms/{image_id}.jpg')
+            if os.path.exists(image_path):
+                with open(image_path, 'rb') as f:
+                    form = MammogramForm({'image': f})
+            else:
+                form = MammogramForm()
+        else:
+            form = MammogramForm()
     return render(request, 'predictions/upload_image.html', {'form': form})
 
 def processing_view(request, mammogram_id):
