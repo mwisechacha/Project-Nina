@@ -13,6 +13,7 @@ body{
     padding: 20px;
     /* gap: 36px; */
     background-color: #FFEEF0;
+    /* width: 100%; */
 }
 
 .logo-container{
@@ -40,16 +41,16 @@ body{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width: 100%;
     padding: 20px;
     background-color: #FFEEF0;
+    height: 60vh;
 }
 
 .left-side{
     display: flex;
     flex-direction: column;
     flex: 2;
-    width: 70%;
+    width: 70vw;
     margin-right: 40px;
 }
 
@@ -92,16 +93,33 @@ body{
 .model-results p{
     font-family: 'Poppins', sans-serif;
     text-align: center;
+    margin-bottom: 20px;
 }
+
+.diagnosis{
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 20px;
+    font-size: 28px;
+
+}
+
+.model-title{
+    font-family: 'Poppins', sans-serif;
+    font-size: 23px;
+    font-weight:600;
+    margin: 30px 0 30px 0;
+}
+
+
 
 .image{
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    max-width: 50%;
+    width: 50vw;
 }
-
+.image img{
+  width:50vw;
+  height: 100%;
+  object-fit: cover;
+}
 .details{
     flex: 1;
     margin-right: 20px;
@@ -138,6 +156,7 @@ ul li{
     display: flex;
     justify-content: space-between;
     padding: 0;
+    margin-bottom: 10px;
 }
 
 .metrics li{
@@ -148,43 +167,48 @@ ul li{
 .num-metrics li{
     font-size: 1rem;
     font-weight: bold;
+    margin-bottom: 0px;
+
 }
 
 .metrics li, .num-metrics li{
     flex: 1;
-    text-align: center;
+    /* text-align: center; */
 }
 
 table{
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
     text-align: center;
-    padding: 10px;
-    border: 1px solid #B3B3B3;
     border-radius: 10px;
-}
+    margin-bottom: 40px;
 
-th td{
-    border-left: none;
-    border-right: none;
+}
+tbody tr{
+    border: 2px solid #B3B3B3;
     padding: 10px;
 }
 
-tr{
-    border-bottom: 1px solid #B3B3B3;
+td th{
+    font-size: 22px;
+    border: 2px solid #B3B3B3;
+    border-radius: 20px;
+}
+ 
+th{
+    font-size: 25px;
+    padding: 15px;
+    font-weight: 800;
+
 }
 
-table th{
-    font-weight: bold;
+td{
+    font-size: 22px;
+    padding: 15px;
+    font-weight: 500;
+
 }
 
-.image img{
-    max-width: 100%;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
 
 footer {
     background-color: white;
