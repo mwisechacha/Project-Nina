@@ -20,12 +20,59 @@
                 </div>
                 <div>
                     <p class="drop-zone__prompt"> <span class="browse">Browse</span> to Upload</p>
-                    <input type="file" name="image" class="drop-zone__input" required> 
+                    <input type="file" name="image" class="drop-zone__input" id="upload-input" hidden required> 
                 </div>
                 <div>
-                    <button type="submit">Upload Image</button>
+                    <button type="button" id="upload-button">Upload Image</button>
                 </div>
+            </div>
+
+            <div class="form-preview" style="display: none;">
+                <img src="{% static 'images/mammogram.png' %}" alt="Mammogram" class="mammogram-image">
+                <button type="button" id="change-image">Change Image</button>
+                <div class="form-group">
+                    <label for="breast-density">Breast Density</label>
+                    <select name="breast-density" id="breast-density" required>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mass-margin">Mass Margin</label>
+                    <select name="mass-margin" id="mass-margin" required>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="mass-shape">Mass Shape</label>
+                    <select name="mass-shape" id="mass-shape" required>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <button type="submit">Make Prediction</button>
+            </div>
+            
         </form>           
     </div>
+    <script>
+        document.getElementById('upload-button').addEventListener('click', function() {
+            document.getElementById('upload-input').value = null;
+            document.getElementById('upload-input').click();
+        });
+        document.getElementById('upload-input').addEventListener('change', function(e) {
+            document.querySelector('.drag-zone').style.display = 'none';
+            document.querySelector('.form-preview').style.display = 'flex';
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.querySelector('.mammogram-image').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        });
+        document.getElementById('change-image').addEventListener('click', function() {
+            document.querySelector('.drag-zone').style.display = 'flex';
+            document.querySelector('.form-preview').style.display = 'none';
+        });
+    </script>
 </body>
 </html>
