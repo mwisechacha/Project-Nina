@@ -21,12 +21,12 @@
         <div class="results-container">
             <div class="left-side">
                 <div class="nav-links">
-                    <a href="#" class="nav-link" data-target="data-summary">Data Summary</a>
-                    <a href="#" class="nav-link active" data-target="model-results">Model Results</a>
-                    <a href="#" class="nav-link" data-target="birads-statistics">BI-RADS Statistics</a>
+                    <button class="nav-link" data-target="data-summary">Performance Metrics</button>
+                    <button class="nav-link active" data-target="model-results">Model Results</button>
                 </div>
                 <section id="data-summary" class="content-section" style="display: none;">
-                    <p>Summary of the data used for the model</p>
+                    <h1 class="model-title">Summary of the data used for the model</h1>
+
                     <table>
                         <thead>
                             <tr>
@@ -36,31 +36,22 @@
                                 <th>Total</th>
                             </tr>
                             <tr>
-                                <td>Count</td>
+                                <td>Image Count</td>
+                                <td>{{benign_count}}</td>
+                                <td>{{malignant_count}}</td>
+                                <td>{{total_count}}</td>
+                            </tr>
+                            <tr>
+                                <td>Mass Description Count</td>
                                 <td>{{benign_count}}</td>
                                 <td>{{malignant_count}}</td>
                                 <td>{{total_count}}</td>
                             </tr>
                         </thead>
                     </table>
-                </section>
 
-                <section id="model-results" class="content-section model-results">
-                    <p>Pathology</p>
-                    <h1 class="diagnosis">{{prediction}}</h1>
                     <h1 class="model-title">Model Performance Metrics</h1>
-                    <ul>
-                        <div class="metrics">
-                            <li>Sensitivity</li>
-                            <li>Specificity</li>
-                            <li>AUC/ROC</li>
-                        </div>
-                        <div class="num-metrics">
-                            <li>{{sensitivity}}</li>
-                            <li>{{specificity}}</li>
-                            <li>0.74</li>
-                        </div> 
-                    </ul>
+
                     <table>
                             <tr>
                                 <th>ID</th>
@@ -69,22 +60,65 @@
                                 <th>F1 Score</th>
                             </tr>
                             <tr>
-                                <td>1</td>
+                                <td>M1</td>
                                 <td>{{precision}}</td>
                                 <td>{{recall}}</td>
                                 <td>{{f1_score}}</td>
                             </tr>
                             <tr>
-                                <td>Total</td>
-                                <td>0.74</td>
-                                <td>0.74</td>
-                                <td>0.74</td>
+                                <td>M2</td>
+                                <td>{{precision}}</td>
+                                <td>{{recall}}</td>
+                                <td>{{f1_score}}</td>
                             </tr>
+                            <tr>
+                                <td>M3</td>
+                                <td>{{precision}}</td>
+                                <td>{{recall}}</td>
+                                <td>{{f1_score}}</td>
+                            </tr>
+                            
                     </table>
                 </section>
-                
-                <section id="birads-statistics" class="content-section" style="display: none;">
-                    <p>BI-RADS Statistics</p>
+
+                <section id="model-results" class="content-section model-results">
+                    <div class="results-diagnosis">
+                        <div>
+                            <p>Pathology</p>
+                            <h1 class="diagnosis">{{prediction}}</h1>
+                        </div>
+
+                        <div>
+                            <p>Birads Assessment</p>
+                            <h1 class="diagnosis">{category}</h1>
+                        </div>
+                    </div>
+
+                    <div class="results-probability">
+                        <h1 class="model-title">Probability of Cancer</h1>
+                        <div class="progress-track">
+                            <div class="progress-thumb"
+                                style="width: 50%;"
+                            ></div>
+                        </div>
+                        <p>{description}</p>
+                    </div>
+
+                    <div class="mass-attributes">
+                        <ul>
+                            <li>Breast Density</li>
+                            <li>Mass Margin</li>
+                            <li>Mass Shape</li>
+                        </ul>
+                        <ul style="font-weight: bold;">
+                            <li>{{sensitivity}}</li>
+                            <li>{{specificity}}</li>
+                            <li>0.74</li>
+                        </ul> 
+                    </div>
+
+                    <a href="#" class="upload-button">Upload another image</a>
+                    
                 </section>
             </div>
                 <div class="image">
@@ -96,16 +130,16 @@
         <h3>Advanced Analytics</h3>
     </footer>  
     <script>
-        document.querySelector('.nav-link').forEach(link => {
+        document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(event){
                 event.preventDefault();
-                document.querySelector('.nav-link').forEach(link => link.classList.remove('active'));
+                document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
                 this.classList.add('active');
            
 
-                document.querySelector('.content-section').forEach(sections => section.style.display = 'none');
+                document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
                 const target = link.getAttribute('data-target');
-                document.getElementById.style.display = 'block';
+                document.getElementById(target).style.display = 'block';
             });
         });
     </script>
