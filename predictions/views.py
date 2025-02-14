@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import messages
 from .forms import MammogramForm, ModelMetricsForm
-from .models import Mammogram
+from .models import Mammogram, ModelMetrics
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 import time
@@ -15,13 +15,12 @@ def upload_mammogram(request):
     image_id = request.GET.get('image_id')
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
-        metrics_form = ModelMetricsForm(request.POST)
-        if mammogram_form.is_valid() and metrics_form.is_valid():
+        if mammogram_form.is_valid():
+            print("Forms are valid")
             mammogram = mammogram_form.save()
-            metrics = metrics_form.save(commit=False)
-            metrics.mammogram = mammogram
-            metrics.save()
-            return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
+            return HttpResponseRedirect(reverse('predict_and_redirect', args=[mammogram.image_id]))
+        else:
+            print(mammogram_form.errors)
     else:
         if image_id:
             image_path = os.path.join(settings.MEDIA_ROOT, 'images', f'images/mammograms/{image_id}.jpg')
@@ -32,9 +31,7 @@ def upload_mammogram(request):
                 mammogram_form = MammogramForm()
         else:
             mammogram_form = MammogramForm()
-        metrics_form = ModelMetricsForm()
-    return render(request, 'predictions/upload_image.html', {'mammogram_form': mammogram_form,
-                                                             'metrics_form': metrics_form})
+    return render(request, 'predictions/upload_image.html', {'mammogram_form': mammogram_form})
 
 def processing_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
@@ -56,6 +53,7 @@ def predict_and_redirect_view(request, mammogram_id):
 
     mammogram.save()
     print("Prediction saved")
+    print(mammogram.descriptive_diagnosis)
 
     return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
     
@@ -65,15 +63,24 @@ def results_view(request, mammogram_id):
 
     # query metrics
     benign_count, malignant_count, total_count = get_mammogram_stats()
+    metrics = ModelMetrics.objects.all()
+
+    breast_density_mapping = {
+        'Breasts are almost entirely fatty': 1,
+        'There are scattered areas of dense tissue': 2,
+        'Breasts are heterogeneously dense': 3,
+        'Breats are extremely dense': 4
+    }
 
     context = {
         'mammogram': mammogram,
         'prediction': mammogram.model_diagnosis,
         'describe_prediction': mammogram.descriptive_diagnosis,
+        'breast_density_mapping': breast_density_mapping,
         'benign_count': benign_count,
         'malignant_count': malignant_count,
         'total_count': total_count,
-        'metrics': mammogram.metrics.all()
+        'metrics': metrics
     }
 
     return render(request, 'predictions/results.html' , context)

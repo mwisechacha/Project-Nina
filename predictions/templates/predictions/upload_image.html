@@ -31,8 +31,8 @@
                 <img src="{% static 'images/mammogram.png' %}" alt="Mammogram" class="mammogram-image">
                 <button type="button" id="change-image">Change Image</button>
                 <div class="form-group">
-                    <label for="breast-density">Breast Density</label>
-                    <select name="breast-density" id="breast-density" required>
+                    <label for="breast_density">Breast Density</label>
+                    <select name="breast_density" id="breast_density" required>
                         <option value="category_a">CATEGORY A</option>
                         <option value="category_b">CATEGORY B</option>
                         <option value="category_c">CATEGORY C</option>
@@ -40,14 +40,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="mass-margin">Mass Margin</label>
-                    <select name="mass-margin" id="mass-margin" required>
+                    <label for="mass_margin">Mass Margin</label>
+                    <select name="mass_margin" id="mass_margin" required>
                         <option value="CIRCUMSCRIBED">CIRCUMSCRIBED</option>
                         <option value="ILL_DEFINED">ILL DEFINED</option>
                         <option value="SPICULATED">SPICULATED</option>
                         <option value="OBSCURED">OBSCURED</option>
                         <option value="MICROLOBULATED">MICROLOBULATED</option>
-                        <option value="ILL_DEFINED-SPICULATED">ILL DEFINED-SPICULATED</option>
+                        <option value="ILL_DEFINED-SPICULATED">ILL DEFINED SPICULATED</option>
                         <option value="CIRCUMSCRIBED-ILL_DEFINED">CIRCUMSCRIBED-ILL DEFINED</option>
                         <option value="OBSCURED-ILL_DEFINED">OBSCURED-ILL DEFINED</option>
                         <option value="CIRCUMSCRIBED-OBSCURED">CIRCUMSCRIBED-OBSCURED</option>
@@ -65,10 +65,10 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="mass-shape">Mass Shape</label>
-                    <select name="mass-shape" id="mass-shape" required>
-                        <option value="irregular">IRREGULAR</option>
-                        <option value="oval">OVAL</option>
+                    <label for="mass_shape">Mass Shape</label>
+                    <select name="mass_shape" id="mass_shape" required>
+                        <option value="IRREGULAR">IRREGULAR</option>
+                        <option value="OVAL">OVAL</option>
                         <option value="LOBULATED">LOBULATED</option>
                         <option value="ROUND">ROUND</option>
                         <option value="ARCHITECTURAL_DISTORTATION">ARCHITECTURAL DISTORTATION</option>

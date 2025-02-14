@@ -10,6 +10,7 @@ class Mammogram(models.Model):
     mass_margin = models.CharField(max_length=100, blank=True, null=True)
     mass_shape = models.CharField(max_length=100, blank=True, null=True)
     breast_density = models.CharField(max_length=100, blank=True, null=True)
+    descriptive_diagnosis = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Mammogram for Patient {self.image_id} uploaded at {self.uploaded_at}"
