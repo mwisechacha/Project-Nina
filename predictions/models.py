@@ -7,9 +7,22 @@ class Mammogram(models.Model):
     image = models.ImageField(upload_to='prediction/images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
     model_diagnosis = models.CharField(max_length=100, blank=True, null=True)
+    mass_margin = models.CharField(max_length=100, blank=True, null=True)
+    mass_shape = models.CharField(max_length=100, blank=True, null=True)
+    breast_density = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Mammogram for Patient {self.image_id} uploaded at {self.uploaded_at}"
+    
+class ModelMetrics(models.Model):
+    model_name = models.CharField(max_length=100)
+    accuracy = models.FloatField(blank=True, null=True)
+    precision = models.FloatField(blank=True, null=True)
+    recall = models.FloatField(blank=True, null=True)
+    f1_score = models.FloatField(blank=True, null=True)
+
+    def __str__(self):
+        return f"Metrics for {self.model_name}"
     
 class GroundTruth(models.Model):
     image_id = models.CharField(max_length=255, unique=True)

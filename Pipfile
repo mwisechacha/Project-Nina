@@ -10,6 +10,8 @@ torch = "*"
 torchvision = "*"
 gdown = "*"
 pandas = "*"
+joblib = "*"
+scikit-learn = "*"
 
 [dev-packages]
 

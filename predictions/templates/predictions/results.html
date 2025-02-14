@@ -60,24 +60,15 @@
                                 <th>F1 Score</th>
                             </tr>
                             <tr>
-                                <td>M1</td>
-                                <td>{{precision}}</td>
-                                <td>{{recall}}</td>
-                                <td>{{f1_score}}</td>
-                            </tr>
-                            <tr>
-                                <td>M2</td>
-                                <td>{{precision}}</td>
-                                <td>{{recall}}</td>
-                                <td>{{f1_score}}</td>
-                            </tr>
-                            <tr>
-                                <td>M3</td>
-                                <td>{{precision}}</td>
-                                <td>{{recall}}</td>
-                                <td>{{f1_score}}</td>
-                            </tr>
-                            
+                                {% for metric in metrics %}
+                                <tr>
+                                    <td>{{ metric.model_name }}</td>
+                                    <td>{{ metric.precision }}</td>
+                                    <td>{{ metric.recall }}</td>
+                                    <td>{{ metric.f1_score }}</td>
+                                </tr>
+                                {% endfor %} 
+                            </tr>  
                     </table>
                 </section>
 
@@ -111,9 +102,9 @@
                             <li>Mass Shape</li>
                         </ul>
                         <ul style="font-weight: bold;">
-                            <li>{{sensitivity}}</li>
-                            <li>{{specificity}}</li>
-                            <li>0.74</li>
+                            <li>{{ mammogram.breast_density }}</li>
+                            <li>{{ mammogram.mass_shape}}</li>
+                            <li>{{ mammogram.mass_margin}}</li>
                         </ul> 
                     </div>
 

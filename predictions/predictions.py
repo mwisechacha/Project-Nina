@@ -73,18 +73,3 @@ def get_mammogram_stats():
 
     return benign_count, malignant_count, total_count
 
-def calculate_metrics():
-    true_positives = GroundTruth.objects.filter(Q(label=1) & Q(label=1)).count()
-    true_negatives = GroundTruth.objects.filter(Q(label=0) & Q(label=0)).count()
-    false_positives = GroundTruth.objects.filter(Q(label=1) & Q(label=0)).count()
-    false_negatives = GroundTruth.objects.filter(Q(label=0) & Q(label=1)).count()
-
-    sensitivity = true_positives / (true_positives + false_negatives)
-    specificity = true_negatives / (true_negatives + false_positives)
-
-    accuracy = (true_positives + true_negatives) / (true_positives + true_negatives + false_positives + false_negatives)
-    precision = true_positives / (true_positives + false_positives)
-    recall = true_positives / (true_positives + false_negatives)
-    f1_score = 2 * (precision * recall) / (precision + recall)
-
-    return accuracy, precision, recall, f1_score, sensitivity, specificity
