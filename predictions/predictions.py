@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torchvision.models as models
+from torchvision.models import ResNet18_Weights
 from torchvision import transforms
 import numpy as np
 from PIL import Image
@@ -8,7 +9,8 @@ from django.db.models import  Count, Q
 from .models import GroundTruth
 
 def load_model():
-    model = models.resnet18(pretrained=True)
+    weights = ResNet18_Weights.IMAGENET1K_V1
+    model = models.resnet18(weights=weights)
     num_features = model.fc.in_features
     model.fc = nn.Sequential(
         nn.Linear(num_features, 128),
@@ -19,7 +21,7 @@ def load_model():
     )
 
     model_path = 'predictions/model/trained_model.pth'
-    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
     model.eval()
     return model
 

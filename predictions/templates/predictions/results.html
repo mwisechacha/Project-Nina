@@ -92,7 +92,7 @@
                                 style="width: 50%;"
                             ></div>
                         </div>
-                        <p>{description}</p>
+                        <p>{{ breast_density }}</p>
                     </div>
 
                     <div class="mass-attributes">
@@ -102,13 +102,13 @@
                             <li>Mass Shape</li>
                         </ul>
                         <ul style="font-weight: bold;">
-                            <li>{{ mammogram.breast_density }}</li>
+                            <li>{{ breast_density_category }}</li>
                             <li>{{ mammogram.mass_shape}}</li>
                             <li>{{ mammogram.mass_margin}}</li>
                         </ul> 
                     </div>
 
-                    <a href="#" class="upload-button">Upload another image</a>
+                    <a href="{% url 'upload_mammogram' %}" class="upload-button">Upload another image</a>
                     
                 </section>
             </div>
@@ -127,7 +127,6 @@
                 document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
                 this.classList.add('active');
            
-
                 document.querySelectorAll('.content-section').forEach(section => section.style.display = 'none');
                 const target = link.getAttribute('data-target');
                 document.getElementById(target).style.display = 'block';

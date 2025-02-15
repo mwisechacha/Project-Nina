@@ -6,10 +6,8 @@ from .forms import MammogramForm, ModelMetricsForm
 from .models import Mammogram, ModelMetrics
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
-import time
-import os
 from django.conf import settings
-
+import os
 
 def upload_mammogram(request):
     image_id = request.GET.get('image_id')
@@ -17,7 +15,8 @@ def upload_mammogram(request):
         mammogram_form = MammogramForm(request.POST, request.FILES)
         if mammogram_form.is_valid():
             print("Forms are valid")
-            mammogram = mammogram_form.save()
+            mammogram = mammogram_form.save(commit=False)
+            mammogram.save()
             return HttpResponseRedirect(reverse('predict_and_redirect', args=[mammogram.image_id]))
         else:
             print(mammogram_form.errors)
@@ -65,18 +64,28 @@ def results_view(request, mammogram_id):
     benign_count, malignant_count, total_count = get_mammogram_stats()
     metrics = ModelMetrics.objects.all()
 
-    breast_density_mapping = {
-        'Breasts are almost entirely fatty': 1,
-        'There are scattered areas of dense tissue': 2,
-        'Breasts are heterogeneously dense': 3,
-        'Breats are extremely dense': 4
+    breast_density_category_mapping = {
+        'category_a': "CATEGORY A",
+        'category_b': "CATEGORY B",
+        'category_c': "CATEGORY C",
+        'category_d': "CATEGORY D"
     }
+
+    breast_density_description_mapping = {
+        'category_a': 'Breasts are almost entirely fatty',
+        'category_b': 'There are scattered areas of dense tissue',
+        'category_c': 'Breasts are heterogeneously dense',
+        'category_d': 'Breasts are extremely dense'
+    }
+
+    breast_density_description = breast_density_description_mapping.get(mammogram.breast_density, 'Unknown')
 
     context = {
         'mammogram': mammogram,
         'prediction': mammogram.model_diagnosis,
         'describe_prediction': mammogram.descriptive_diagnosis,
-        'breast_density_mapping': breast_density_mapping,
+        'breast_density': breast_density_description,
+        'breast_density_category': breast_density_category_mapping.get(mammogram.breast_density, 'Unknown'),
         'benign_count': benign_count,
         'malignant_count': malignant_count,
         'total_count': total_count,
