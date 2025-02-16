@@ -1,17 +1,17 @@
 from django.db import models
 import uuid
 
-class Patient(models.Model):
-    patient_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=100)
-    age = models.IntegerField()
+# class Patient(models.Model):
+#     patient_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     name = models.CharField(max_length=100)
+#     age = models.IntegerField()
 
-    def __str__(self):
-        return f"Patient {self.name} with ID {self.patient_id}"
+#     def __str__(self):
+#         return f"Patient {self.name} with ID {self.patient_id}"
 
 
 class Mammogram(models.Model):
-    patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    # patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
     image_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField(upload_to='prediction/images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
@@ -26,6 +26,7 @@ class Mammogram(models.Model):
     
 class ModelMetrics(models.Model):
     model_name = models.CharField(max_length=100)
+    target = models.IntegerField()
     accuracy = models.FloatField(blank=True, null=True)
     precision = models.FloatField(blank=True, null=True)
     recall = models.FloatField(blank=True, null=True)

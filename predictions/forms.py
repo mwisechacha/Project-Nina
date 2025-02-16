@@ -9,4 +9,7 @@ class MammogramForm(forms.ModelForm):
 class ModelMetricsForm(forms.ModelForm):
     class Meta:
         model = ModelMetrics
-        fields = ['model_name', 'accuracy', 'precision', 'recall', 'f1_score']
+        fields = ['model_name',
+                  'target', 'accuracy', 
+                  'precision','recall', 
+                  'f1_score']

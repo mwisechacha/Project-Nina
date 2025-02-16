@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from .forms import MammogramForm
-from .models import Mammogram, ModelMetrics, Patient
+from .models import Mammogram, ModelMetrics
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 from django.conf import settings
@@ -13,15 +13,15 @@ def upload_mammogram(request):
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
         if mammogram_form.is_valid():
-            patient_id = request.POST.get('patient_id')
-            patient, created = Patient.objects.get_or_create(
-                patient_id=patient_id,
-                defaults={'name': "Angela Chacha", 'age': 22}
-            )
+            # patient_id = request.POST.get('patient_id')
+            # patient, created = Patient.objects.get_or_create(
+            #     patient_id=patient_id,
+            #     defaults={'name': "Angela Chacha", 'age': 22}
+            # )
             mammogram = mammogram_form.save(commit=False)
-            mammogram.patient = patient
+            # mammogram.patient = patient
             mammogram.save()
-            return HttpResponseRedirect(reverse('processing', args=[mammogram.image_id]))
+            return HttpResponseRedirect(reverse('predict_and_redirect', args=[mammogram.image_id]))
         else:
             print(mammogram_form.errors)
     else:
