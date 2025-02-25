@@ -51,11 +51,14 @@ def predict_and_redirect_view(request, mammogram_id):
     mass_margin = mammogram.mass_margin
     mass_shape = mammogram.mass_shape
     breast_density = mammogram.breast_density
-    describe_prediction = describe_predict(mass_margin, mass_shape, breast_density)
+    describe_prediction, birads_prediction = describe_predict(mass_margin, mass_shape, breast_density)
     mammogram.descriptive_diagnosis = describe_prediction
+    mammogram.birads_assessment = birads_prediction
+
 
     mammogram.save()
     print(mammogram.descriptive_diagnosis)
+    print(mammogram.birads_assessment)
 
     return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
     
@@ -87,6 +90,7 @@ def results_view(request, mammogram_id):
         'mammogram': mammogram,
         'prediction': mammogram.model_diagnosis,
         'describe_prediction': mammogram.descriptive_diagnosis,
+        'birads_assessment': mammogram.birads_assessment,
         'breast_density': breast_density_description,
         'breast_density_category': breast_density_category_mapping.get(mammogram.breast_density, 'Unknown'),
         'benign_count': benign_count,

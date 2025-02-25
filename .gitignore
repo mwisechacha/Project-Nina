@@ -144,3 +144,4 @@ GitHub.sublime-settings
 /static/
 /data/
 /predictions/model
+/predictions/pipeline
