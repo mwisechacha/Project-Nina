@@ -21,7 +21,7 @@ def upload_mammogram(request):
             mammogram = mammogram_form.save(commit=False)
             # mammogram.patient = patient
             mammogram.save()
-            return HttpResponseRedirect(reverse('predict_and_redirect', args=[mammogram.image_id]))
+            return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
         else:
             print(mammogram_form.errors)
     else:
@@ -38,7 +38,8 @@ def upload_mammogram(request):
 
 def processing_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
-    return render(request, 'predictions/process_image.html', {'mammogram_id': mammogram_id})
+    results_url = reverse('predict_and_redirect', args=[mammogram.image_id])
+    return render(request, 'predictions/process_image.html', {'mammogram_id': mammogram_id, 'results_url': results_url})
 
 def predict_and_redirect_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
