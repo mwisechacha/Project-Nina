@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnosis Report</title>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            <h1>Diagnosis Report</h1>
+        </div>
+        <div class="content">
+            <h1>Pathology</h1>
+            <p>{{ prediction }}</p>
+            <h1>Birads Assessment</h1>
+            <p>{{ birads_assessment }}</p>
+            <h1>Breast Density</h1>
+            <p>{{ breast_density }}</p>
+            <h1>Breast Density Category</h1>
+            <p>{{ breast_density_category }}</p>
+            <h1>Mass Shape</h1>
+            <p>{{ mammogram.mass_shape }}</p>
+            <h1>Mass Margin</h1>
+            <p>{{ mammogram.mass_margin }}</p>
+        </div>
+</body>
+</html>

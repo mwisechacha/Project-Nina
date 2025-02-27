@@ -12,6 +12,7 @@ gdown = "*"
 pandas = "*"
 joblib = "*"
 scikit-learn = "*"
+pdfkit = "*"
 
 [dev-packages]
 

@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
+from django.template.loader import render_to_string
+import pdfkit
 from .forms import MammogramForm
 from .models import Mammogram, ModelMetrics
 from .predictions import predict, get_mammogram_stats
@@ -101,3 +103,20 @@ def results_view(request, mammogram_id):
     }
 
     return render(request, 'predictions/results.html' , context)
+
+def generate_report_view(request, mammogram_id):
+    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
+    context = {
+        'mammogram': mammogram,
+        'prediction': mammogram.model_diagnosis,
+        'describe_prediction': mammogram.descriptive_diagnosis,
+        'birads_assessment': mammogram.birads_assessment,
+        'breast_density': mammogram.breast_density,
+        'breast_density_category': mammogram.breast_density,
+    }
+
+    html_string = render_to_string('predictions/report.html', context)
+    pdf_file = pdfkit.from_string(html_string, False)
+
+    response = HttpResponse(pdf_file, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{mammogram.image_id}_report.pdf"'

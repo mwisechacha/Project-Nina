@@ -14,7 +14,7 @@
                 <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
             </div>
             <div class="btn">
-                <button class="btn-download">Download Report</button>
+                <a href="{% url 'generate_report mammogram.image_id %}" class="btn-download">Download Report</a>
             </div>
         </div>
 
