@@ -6,5 +6,5 @@ urlpatterns = [
     path('process/<uuid:mammogram_id>/', processing_view, name='process_mammogram'),
     path('predict/<uuid:mammogram_id>/', predict_and_redirect_view, name='predict_and_redirect'),
     path('results/<uuid:mammogram_id>/', results_view, name='results'),
-    path('report/<int:mammogram_id>/', generate_report_view, name='generate_report'),
+    path('report/<uuid:mammogram_id>/', generate_report_view, name='generate_report'),
 ]

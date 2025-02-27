@@ -18,6 +18,39 @@ body{
 
 }
 
+.patient-details{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.patient-details label{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 200;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.patient-details input{
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+.patient-details input:focus{
+    border-color: #FF4C6A;
+    box-shadow: 0 0 5px rgba(255, 89, 143, 0.5);
+    width: 100%;
+}
+
 .logo-container{
     position: absolute;
     top: 20px;

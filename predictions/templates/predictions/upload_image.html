@@ -14,6 +14,16 @@
     <div class="upload-container">
         <form id="upload-form" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="patient-details">
+                <div class="patient">
+                    <label for="patient_name">Patient Name</label>
+                    <input type="text" name="patient_name" id="patient_name" required>
+                </div>
+                <div class="patient">
+                    <label for="patient_age">Patient Age</label>
+                    <input type="number" name="patient_age" id="patient_age" required>
+                </div>
+            </div>
             <div class="drag-zone">
                 <div class="upload-icon">
                     <img src="{% static 'images/drop-icon.png' %}" alt="Upload Icon">

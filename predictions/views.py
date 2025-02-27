@@ -1,10 +1,12 @@
+from io import BytesIO
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
-import pdfkit
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 from .forms import MammogramForm
-from .models import Mammogram, ModelMetrics
+from .models import Mammogram, ModelMetrics, Patient
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 from django.conf import settings
@@ -15,13 +17,13 @@ def upload_mammogram(request):
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
         if mammogram_form.is_valid():
-            # patient_id = request.POST.get('patient_id')
-            # patient, created = Patient.objects.get_or_create(
-            #     patient_id=patient_id,
-            #     defaults={'name': "Angela Chacha", 'age': 22}
-            # )
+            patient_id = request.POST.get('patient_id')
+            patient, created = Patient.objects.get_or_create(
+                patient_id=patient_id,
+                defaults={'name': "Angela Chacha", 'age': 22}
+            )
             mammogram = mammogram_form.save(commit=False)
-            # mammogram.patient = patient
+            mammogram.patient = patient
             mammogram.save()
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
         else:
@@ -115,8 +117,11 @@ def generate_report_view(request, mammogram_id):
         'breast_density_category': mammogram.breast_density,
     }
 
-    html_string = render_to_string('predictions/report.html', context)
-    pdf_file = pdfkit.from_string(html_string, False)
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="report_{mammogram_id}.pdf"'
 
-    response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{mammogram.image_id}_report.pdf"'
+    buffer = BytesIO()
+    p = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+
+    # add content to the pdf
