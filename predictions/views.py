@@ -4,7 +4,12 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
 from reportlab.lib.pagesizes import letter
-from reportlab.pdfgen import canvas
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+from reportlab.lib import colors
+from reportlab.lib.colors import HexColor
+from reportlab.pdfbase.ttfonts import TTFont
+from reportlab.pdfbase import pdfmetrics
 from .forms import MammogramForm
 from .models import Mammogram, ModelMetrics, Patient
 from .predictions import predict, get_mammogram_stats
@@ -121,7 +126,63 @@ def generate_report_view(request, mammogram_id):
     response['Content-Disposition'] = f'attachment; filename="report_{mammogram_id}.pdf"'
 
     buffer = BytesIO()
-    p = canvas.Canvas(buffer, pagesize=letter)
-    width, height = letter
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
 
-    # add content to the pdf
+    styles = getSampleStyleSheet()
+    styles['Heading1'].fontSize = 18
+    styles['Heading1'].leading = 22
+    styles['Heading1'].spaceAfter = 10
+    styles['Heading1'].alignment = 1
+    
+    styles.add(ParagraphStyle(name='CustomHeading2', fontSize=14, leading=18, spaceAfter=10))
+    styles.add(ParagraphStyle(name='CustomBodyText', fontSize=12, leading=14))
+
+    # register font
+    # font_path = os.path.join(settings.STATICFILES_DIRS[0], 'fonts', 'OpenSans-Regular.ttf')
+    # pdfmetrics.registerFont(TTFont('OpenSans', font_path))
+
+    elements = []
+
+    # add logo
+    logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
+    elements.append(Image(logo_path, width=100, height=50))
+    elements.append(Spacer(1, 12))
+
+
+    elements.append(Paragraph(f"Diagnosis Report for {Patient.name}", styles['Heading1']))
+    elements.append(Spacer(1, 12))
+
+    # add mammogram image
+    mammogram_image_path = mammogram.image.path
+    elements.append(Image(mammogram_image_path, width=400, height=400))
+
+    data = [
+        ['Field', 'Value'],
+        ['Pathology', mammogram.model_diagnosis],
+        ['Birads Assessment', mammogram.birads_assessment],
+        ['Breast Density', mammogram.breast_density],
+        ['Mass Shape', mammogram.mass_shape],
+        ['Mass Margin', mammogram.mass_margin]
+    ]
+
+    table = Table(data, colWidths=[150, 300])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), HexColor("#FFEEF0")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        # ('FONTNAME', (0, 0), (-1, 0), 'OpenSans'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    ]))
+    
+    elements.append(table)
+    elements.append(Spacer(1, 12))
+    
+    doc.build(elements)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response

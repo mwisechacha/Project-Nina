@@ -142,6 +142,7 @@ GitHub.sublime-settings
 
 /media/
 /static/
+/staticfiles/
 /data/
 /predictions/model
 /predictions/pipeline
