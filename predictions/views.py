@@ -24,7 +24,6 @@ def upload_mammogram(request):
         if mammogram_form.is_valid():
             patient_id = request.POST.get('patient_id')
             patient, created = Patient.objects.get_or_create(
-                patient_id=patient_id,
                 defaults={'name': "Angela Chacha", 'age': 22}
             )
             mammogram = mammogram_form.save(commit=False)

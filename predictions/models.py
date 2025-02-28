@@ -2,16 +2,15 @@ from django.db import models
 import uuid
 
 class Patient(models.Model):
-    patient_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100, null=True, blank=True)
     age = models.IntegerField()
 
     def __str__(self):
-        return f"Patient {self.name} with ID {self.patient_id}"
+        return f"Patient {self.name}"
 
 
 class Mammogram(models.Model):
-    # patient = models.ForeignKey(Patient, on_delete=models.CASCADE, default=1)
+    patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='mammograms', default=None)
     image_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField(upload_to='prediction/images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)
