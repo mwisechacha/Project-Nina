@@ -20,7 +20,7 @@ def load_model():
         nn.Sigmoid()
     )
 
-    model_path = 'predictions/model/trained_model.pth'
+    model_path = 'predictions/model/trained_model_3.pth'
     model.load_state_dict(torch.load(model_path, map_location=torch.device('cpu'), weights_only=True))
     model.eval()
     return model
@@ -38,21 +38,6 @@ def predict(image_file):
     ])
 
     image = Image.open(image_file)
-    # image = np.array(image)
-
-    # if image.ndim == 2:
-    #   image = np.stack([image] * 3, axis=0)
-    # elif image.ndim == 3 and image.shape[0] != 3:
-    #   image = image[:3, :, :]
-    # elif image.ndim != 3:
-    #   raise ValueError(f"Invalid image shape: {image.shape}")
-
-    # # convert image to tensor
-    # image = torch.tensor(image, dtype=torch.float32)
-
-    # # apply transformations
-    # if transform:
-    #   image = transform(image).unsqueeze(0)
 
     if image.mode != 'RGB':
         image = image.convert('RGB')

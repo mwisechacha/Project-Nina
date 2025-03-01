@@ -60,9 +60,10 @@ def predict_and_redirect_view(request, mammogram_id):
     mass_margin = mammogram.mass_margin
     mass_shape = mammogram.mass_shape
     breast_density = mammogram.breast_density
-    describe_prediction, birads_prediction = describe_predict(mass_margin, mass_shape, breast_density)
+    describe_prediction, birads_prediction, probability_of_cancer = describe_predict(mass_margin, mass_shape, breast_density)
     mammogram.descriptive_diagnosis = describe_prediction
     mammogram.birads_assessment = birads_prediction
+    mammogram.probability_of_cancer = probability_of_cancer
 
 
     mammogram.save()
@@ -100,6 +101,7 @@ def results_view(request, mammogram_id):
         'prediction': mammogram.model_diagnosis,
         'describe_prediction': mammogram.descriptive_diagnosis,
         'birads_assessment': mammogram.birads_assessment,
+        'probability_of_cancer': mammogram.probability_of_cancer,
         'breast_density': breast_density_description,
         'breast_density_category': breast_density_category_mapping.get(mammogram.breast_density, 'Unknown'),
         'benign_count': benign_count,

@@ -89,10 +89,9 @@
 
                     <div class="results-probability">
                         <h1 class="model-title">Probability of Cancer</h1>
-                        <div class="progress-track">
+                        <div class="progress-track" title="{{ probability_of_cancer}}%">
                             <div class="progress-thumb"
-                                style="width: 50%;"
-                            ></div>
+                                style="width: {{ probability_of_cancer }}%;"></div>
                         </div>
                         <p>{{ breast_density }}</p>
                     </div>

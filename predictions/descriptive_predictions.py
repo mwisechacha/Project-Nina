@@ -72,7 +72,18 @@ def describe_predict(mass_margin, mass_shape, breast_density):
 
         print(f"Model 2 prediction: {prediction_label_2}")
 
+        probability_mapping = {
+            0: 0,
+            1: 0,
+            2: 0,
+            3: 2,
+            4: 50,
+            5: 95,
+        }
+
+        probability_of_cancer = probability_mapping[predicted_class]
+
     except Exception as e:
         raise RuntimeError(f"Model 2 prediction failed: {e}")
 
-    return prediction_label, prediction_label_2
+    return prediction_label, prediction_label_2, probability_of_cancer
