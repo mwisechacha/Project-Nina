@@ -45,7 +45,7 @@ a{
     justify-content: space-between;
     padding: 20px;
     background-color: #FFEEF0;
-    height: 80vh;
+    height: min(80vh, 800px);
 }
 
 .left-side{
