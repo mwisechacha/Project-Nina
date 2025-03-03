@@ -1,6 +1,6 @@
 from io import BytesIO
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
 from reportlab.lib.pagesizes import letter
@@ -15,6 +15,7 @@ from .models import Mammogram, ModelMetrics, Patient
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 from django.conf import settings
+from .utils import get_conf_matrix_data
 import os
 
 def upload_mammogram(request):
@@ -71,6 +72,10 @@ def predict_and_redirect_view(request, mammogram_id):
     print(mammogram.birads_assessment)
 
     return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
+
+def confusion_matrix_data(request):
+    data = get_conf_matrix_data()
+    return JsonResponse(data)
     
 
 def results_view(request, mammogram_id):
@@ -107,7 +112,8 @@ def results_view(request, mammogram_id):
         'benign_count': benign_count,
         'malignant_count': malignant_count,
         'total_count': total_count,
-        'metrics': metrics
+        'metrics': metrics,
+        'confusion_matrix_data_url': reverse('confusion_matrix_data')
     }
 
     return render(request, 'predictions/results.html' , context)

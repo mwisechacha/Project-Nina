@@ -1,6 +1,8 @@
 import gdown
 import os
 import csv
+from predictions.models import ModelMetrics
+from django.http import JsonResponse
 
 def download_labels_file(file_id, dest_path):
     url = f'https://drive.google.com/uc?id={file_id}'
@@ -24,3 +26,43 @@ def generate_labels_csv(benign_dir, malignant_dir, output_csv):
 
     print(f"labels csv generated at {output_csv}")
     return output_csv
+
+def get_conf_matrix_data(request):
+    metrics = ModelMetrics.objects.filter(target=0)
+
+    confusion_matrices = {}
+
+    model_sample_sizes = {
+        "ResNet18": 2972,
+        "Random Forest Classifier": 962,
+        "Random Forest CLf-Birads": 962
+    }
+
+    for metric in metrics:
+        model_name = metric.model_name
+        total_samples = model_sample_sizes.get(model_name, None)
+
+        if total_samples is None:
+            continue  
+
+        try:
+            TP = (metric.precision / 100) * (metric.recall / 100) * total_samples
+            FN = (metric.recall / 100) * total_samples - TP
+            FP = (metric.precision / 100) * total_samples - TP
+            TN = total_samples - (TP + FN + FP)
+
+            # Ensure all values are non-negative integers
+            TP, FP, FN, TN = max(0, int(TP)), max(0, int(FP)), max(0, int(FN)), max(0, int(TN))
+
+        except ZeroDivisionError:
+            TP, FP, FN, TN = 0, 0, 0, 0  
+
+        confusion_matrices[model_name] = {
+            "labels": ["Benign", "Malignant"],
+            "matrix": [
+                [TP, FN], 
+                [FP, TN]  
+            ]
+        }
+
+    return JsonResponse(confusion_matrices)

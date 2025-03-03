@@ -124,8 +124,16 @@
 
     <footer style="margin: 0;">
         <h1>Advanced Analytics</h1>
+        <!-- <div class="chart-container">
+            <svg id="confusionMatrixChart" width="500" height="500"></svg>
+        </div>
+
+        <div class="chart-container">
+            <svg id="aucRocCurveChart" width="500" height="500"></svg>
+        </div> -->
     </footer>  
-    <script>
+    <script type="module">
+        import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(event){
                 event.preventDefault();
@@ -137,6 +145,85 @@
                 document.getElementById(target).style.display = 'block';
             });
         });
+
+        fetch("{% url 'confusion_matrix_data' %}")
+        .then(response => response.json())
+        .then(data => {
+            Object.keys(data).forEach((model, index) => {
+                const { labels, matrix } = data[model];
+
+                // container setup
+                const width = 300, height = 300;
+                const cellSize = width / 2;
+                const padding = 50;
+
+                const svg = d3.select("footer")
+                    .append("svg")
+                    .attr("width", width + padding)
+                    .attr("height", height + padding)
+                    .append("g")
+                    .attr("transform", `translate(${padding / 2}, ${padding / 2})`);
+
+                svg.append("text")
+                    .attr("x", 100)
+                    .attr("y", 20)
+                    .attr("font-size", "16px")
+                    .attr("font-weight", "bold")
+                    .text(`Confusion Matrix - ${model}`);
+
+                // color scale
+                const colorScale = d3.scaleLinear()
+                    .domain([d3.max(matrix.flat()), d3.max(matrix.flat())])
+                    .range(["#FFEEF0", "#94126A"]);
+
+                // draw matrix
+                matrix.forEach((row, i) => {
+                    row.forEach((value, j) => {
+                        svg.append("rect")
+                            .attr("x", j * cellSize)
+                            .attr("y", i * cellSize + 50)
+                            .attr("width", cellSize)
+                            .attr("height", cellSize)
+                            .attr("fill", colorScale(value))
+                            .attr("stroke", "black")
+                            .on("mouseover", function() {
+                                d3.select(this).attr("fill", "#FFEEF0");
+                            })
+                            .on("mouseout", function() {
+                                d3.select(this).attr("fill", colorScale(value));
+                            });
+                             
+                        // text inside the cell
+                        svg.append("text")
+                            .attr("x", j * cellSize + cellSize / 2)
+                            .attr("y", i * cellSize + 80)
+                            .attr("dy", ".35em")
+                            .attr("text-anchor", "middle")
+                            .attr("font-size", "18px")
+                            .attr("font-weight", "bold")
+                            .text(value);
+                    });
+                });
+
+                // draw labels
+                svg.append("text")
+                    .attr("x", -10)
+                    .attr("y", 250)
+                    .attr("font-size", "20px")
+                    .attr("font-weight", "bold")
+                    // rotate the text to face north
+                    .attr("transform", "rotate(-90, -10, 250)")
+                    .text("Predicted");
+
+                svg.append("text")
+                    .attr("x", 135)
+                    .attr("y", 45)
+                    .attr("font-size", "20px")
+                    .attr("font-weight", "bold")
+                    .text("Actual");
+            });
+        })
+        .catch(error => console.error('Error fetching data:', error));
     </script>
 </body>
 </html>
