@@ -14,10 +14,18 @@
     <div class="upload-container">
         <form id="upload-form" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            <div class="upload-title">
+                <p><span><u>Enter</u></span> patient's details and <span><u>Upload</u></span>
+                a mammogram</p>
+            </div>
             <div class="patient-details">
                 <div class="patient">
-                    <label for="patient_name">Patient Name</label>
-                    <input type="text" name="patient_name" id="patient_name" required>
+                    <label for="patient_name">Patient First Name</label>
+                    <input type="text" name="patient_first_name" id="patient_first_name" required>
+                </div>
+                <div class="patient">
+                    <label for="patient_last_name">Patient Last Name</label>
+                    <input type="text" name="patient_last_name" id="patient_last_name" required>
                 </div>
                 <div class="patient">
                     <label for="patient_age">Patient Age</label>

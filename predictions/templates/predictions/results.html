@@ -94,18 +94,20 @@
                             <h1 class="model-title">Probability of Cancer</h1>
                             <div class="progress-track" title="{{ probability_of_cancer}}%">
                                 <div class="progress-thumb"
-                                    style="width: {{ probability_of_cancer }}%;"></div>
+                                    style="width: {{ probability_of_cancer }}%;">{{ probability_of_cancer }}</div>
                             </div>
                             <p>{{ breast_density }}</p>
                         </div>
 
                         <div class="mass-attributes">
                             <ul>
+                                <li><strong><u>Mass Attributes</u></li>
                                 <li>Breast Density</li>
                                 <li>Mass Margin</li>
                                 <li>Mass Shape</li>
                             </ul>
                             <ul style="font-weight: bold;">
+                                <li><strong><u>Values</u></strong></li>
                                 <li>{{ breast_density_category }}</li>
                                 <li>{{ mammogram.mass_shape}}</li>
                                 <li>{{ mammogram.mass_margin}}</li>
@@ -124,13 +126,6 @@
 
     <footer style="margin: 0;">
         <h1>Advanced Analytics</h1>
-        <!-- <div class="chart-container">
-            <svg id="confusionMatrixChart" width="500" height="500"></svg>
-        </div>
-
-        <div class="chart-container">
-            <svg id="aucRocCurveChart" width="500" height="500"></svg>
-        </div> -->
     </footer>  
     <script type="module">
         import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";

@@ -5,27 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diagnosis Report</title>
     {% load static %}
-    <link rel="stylesheet" href="{{ request.build}}{% static 'css/results.css' %}">
+    <link rel="stylesheet" href="{% static 'css/report.css' %}">
 </head>
 <body>
     <div class="container">
         <div class="header">
             <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
-            <h1>Diagnosis Report</h1>
+            <div class="report-title">
+                <h1>Breast Cancer Diagnosis Report</h1>
+                <h1>{{mammogram.upload_at}}</h1>
+            </div>
         </div>
-        <div class="content">
-            <h1>Pathology</h1>
-            <p>{{ prediction }}</p>
-            <h1>Birads Assessment</h1>
-            <p>{{ birads_assessment }}</p>
-            <h1>Breast Density</h1>
-            <p>{{ breast_density }}</p>
-            <h1>Breast Density Category</h1>
-            <p>{{ breast_density_category }}</p>
-            <h1>Mass Shape</h1>
-            <p>{{ mammogram.mass_shape }}</p>
-            <h1>Mass Margin</h1>
-            <p>{{ mammogram.mass_margin }}</p>
+        <div class="patient-info">
+            <h1>Patient Information</h1>
+            <p><strong>Patient ID:</strong> {{mammogram.patient_id}}</p>
+            <p><strong>Age:</strong> {{mammogram.age}}</p>
+        </div>
+        <div class="history"><h2>HISTORY: BREAST MASS</h2></div>
+        <div><img src="{{ mammogram.image.url }}" alt="Mammogram Image"></div>
+        <div class="findings">
+            <h2><u>Findings:</u></h2>
+            <p>The mammogram was passed through a ResNet18 model and the mass attributes
+                from the radiologist's assessment was pass through a Random Forest Classifier to
+                predict the diagnosis of the patient. The ResNet model predicted the diagnosis as
+                Benign.</p>
+            <h2>Mass Attributes</h2>
+            <table>
+                <tr>
+                    <th>Mass Shape</th>
+                    <th>Mass Margin</th>
+                </tr>
+                <tr>
+                    <td>{{ mammogram.mass_shape }}</td>
+                    <td>{{ mammogram.mass_margin }}</td>
+            </table>
+            <h2>Mass Attributes Prediction</h2>
+            <p>The mass attributes were passed through a Random Forest Classifier to predict the
+                diagnosis of the patient. The model predicted the diagnosis as{{prediction}}</p>
+            <p>The patient also appears to have breast density of {{breast_density_category}} meaning {{breast_density}}</p>
+            <p>Based on the American Cancer Society, the BIRADS model classifies the
+                patient's cancer level as {{birads_assessment}} with a probability of {{probability_of_cancer}}</p>
+
+            <h2><u>Recommendations</u></h2>
+            <p>If the models predictions and the Radiologist's ground truth, we recommend further
+                consultation from the doctor./p>
         </div>
 </body>
 </html>

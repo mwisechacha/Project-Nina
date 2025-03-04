@@ -2,11 +2,12 @@ from django.db import models
 import uuid
 
 class Patient(models.Model):
-    name = models.CharField(max_length=100, null=True, blank=True)
+    first_name = models.CharField(max_length=100, null=True, blank=True)
+    last_name = models.CharField(max_length=100, null=True, blank=True)
     age = models.IntegerField()
 
     def __str__(self):
-        return f"Patient {self.name}"
+        return f"Patient {self.first_name} {self.last_name} aged {self.age}"
 
 
 class Mammogram(models.Model):

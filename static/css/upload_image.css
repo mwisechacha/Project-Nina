@@ -18,24 +18,57 @@ body{
 
 }
 
-.patient-details{
+.upload-title{
     display: flex;
     align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    color: black;
+    margin-bottom: 12px;
+}
+
+.upload-title span{
+    color: #94126A;
+    text-underline-position: below;
+}
+
+.upload-title p{
+    max-width: 60ch;
+    word-spacing: 5px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.patient-details{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     justify-content: center;
     gap: 24px;
     margin-bottom: 24px;
 }
 
+.patient{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
 .patient-details label{
     font-family: 'Open Sans', sans-serif;
+    display: block;
     font-size: 18px;
     font-weight: 200;
     margin-bottom: 10px;
     color: black;
+    width: 30%;
+    padding-left: 20px;
 }
 
 .patient-details input{
-    width: 100%;
+    width: 70%;
     padding: 12px;
     font-size: 14px;
     border-radius: 4px;
@@ -48,7 +81,6 @@ body{
 .patient-details input:focus{
     border-color: #FF4C6A;
     box-shadow: 0 0 5px rgba(255, 89, 143, 0.5);
-    width: 100%;
 }
 
 .logo-container{

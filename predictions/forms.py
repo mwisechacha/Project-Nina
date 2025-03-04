@@ -1,5 +1,5 @@
 from django import forms
-from .models import Mammogram, ModelMetrics
+from .models import Mammogram, ModelMetrics, Patient
 
 class MammogramForm(forms.ModelForm):
     class Meta:
@@ -13,3 +13,11 @@ class ModelMetricsForm(forms.ModelForm):
                   'target', 'accuracy', 
                   'precision','recall', 
                   'f1_score']
+        
+class Patient(forms.ModelForm):
+    class Meta:
+        model = Patient
+        fields = ['first_name', 'last_name',
+                   'age']
+
+    

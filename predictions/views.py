@@ -8,8 +8,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
+from reportlab.lib.enums import TA_RIGHT
 from .forms import MammogramForm
 from .models import Mammogram, ModelMetrics, Patient
 from .predictions import predict, get_mammogram_stats
@@ -23,10 +22,12 @@ def upload_mammogram(request):
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
         if mammogram_form.is_valid():
-            patient_name = request.POST.get('patient_name')
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
             patient_age = request.POST.get('patient_age')
             patient, created = Patient.objects.get_or_create(
-                name=patient_name, age=patient_age)
+                first_name=first_name,
+                last_name=last_name, age=patient_age)
             mammogram = mammogram_form.save(commit=False)
             mammogram.patient = patient
             mammogram.save()
@@ -120,72 +121,123 @@ def results_view(request, mammogram_id):
 
 def generate_report_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
-    context = {
-        'mammogram': mammogram,
-        'prediction': mammogram.model_diagnosis,
-        'describe_prediction': mammogram.descriptive_diagnosis,
-        'birads_assessment': mammogram.birads_assessment,
-        'breast_density': mammogram.breast_density,
-        'breast_density_category': mammogram.breast_density,
-    }
+    patient = mammogram.patient
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="report_{mammogram_id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="{patient.first_name}{patient.last_name}_diagnosis report_{mammogram_id}.pdf"'
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
 
     styles = getSampleStyleSheet()
-    styles['Heading1'].fontSize = 18
-    styles['Heading1'].leading = 22
-    styles['Heading1'].spaceAfter = 10
-    styles['Heading1'].alignment = 1
-    
-    styles.add(ParagraphStyle(name='CustomHeading2', fontSize=14, leading=18, spaceAfter=10))
-    styles.add(ParagraphStyle(name='CustomBodyText', fontSize=12, leading=14))
-
-    # register font
-    # font_path = os.path.join(settings.STATICFILES_DIRS[0], 'fonts', 'OpenSans-Regular.ttf')
-    # pdfmetrics.registerFont(TTFont('OpenSans', font_path))
+    styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, spaceAfter=10, alignment=1, fontName="Helvetica-Bold"))
+    styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold"))
+    styles.add(ParagraphStyle(name="CustomBodyText", fontSize=12, leading=16, spaceAfter=10))
+    styles.add(ParagraphStyle(name="TableHeader", fontSize=12, textColor=colors.white, backColor=HexColor("#FFEEF0"), alignment=1))
+    styles.add(ParagraphStyle(name="Date", fontSize=12, textColor=colors.grey, alignment=TA_RIGHT))
 
     elements = []
 
     # add logo
     logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
     elements.append(Image(logo_path, width=100, height=50))
+    elements.append(Spacer(1, 5))
+    
+    logo_description = "Nina Breast Cancer Detection System"
+    elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
     elements.append(Spacer(1, 12))
+    
+    elements.append(Paragraph("Breast Cancer Diagnosis Report", styles['CenteredHeading']))
+    elements.append(Paragraph(mammogram.uploaded_at.strftime('%d-%m-%Y'), styles['Date']))
+    elements.append(Spacer(1, 20))
 
-
-    elements.append(Paragraph(f"Diagnosis Report for {Patient.name}", styles['Heading1']))
-    elements.append(Spacer(1, 12))
-
-    # add mammogram image
-    mammogram_image_path = mammogram.image.path
-    elements.append(Image(mammogram_image_path, width=400, height=400))
-
-    data = [
-        ['Field', 'Value'],
-        ['Pathology', mammogram.model_diagnosis],
-        ['Birads Assessment', mammogram.birads_assessment],
-        ['Breast Density', mammogram.breast_density],
-        ['Mass Shape', mammogram.mass_shape],
-        ['Mass Margin', mammogram.mass_margin]
+    # patient information
+    elements.append(Paragraph("Patient Information", styles["SubHeading"]))
+    patient_info_data = [
+        ["Patient Name:", patient.first_name + " " + patient.last_name],
+        ["Age:", str(patient.age)]
     ]
-
-    table = Table(data, colWidths=[150, 300])
-    table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), HexColor("#FFEEF0")),
-        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
-        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-        # ('FONTNAME', (0, 0), (-1, 0), 'OpenSans'),
-        ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+    patient_info_table = Table(patient_info_data, colWidths=[150, 300])
+    patient_info_table.setStyle(TableStyle([
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
     ]))
-    
-    elements.append(table)
-    elements.append(Spacer(1, 12))
-    
+    elements.append(patient_info_table)
+    elements.append(Spacer(1, 10))
+
+    # findings and diagnosis
+    elements.append(Paragraph("<u>Summary Findings<u>", styles["SubHeading"]))
+    findings_text = f"""
+    The mammogram was analyzed using a ResNet18 model for image-based classification 
+    and a Random Forest Classifier for mass attributes. The model predicted the diagnosis as 
+    <b>{mammogram.model_diagnosis}</b>.
+    """
+    elements.append(Paragraph(findings_text, styles["CustomBodyText"]))
+    elements.append(Spacer(1, 10))
+
+    # mammogram image
+    elements.append(Paragraph("Mammogram Image", styles["SubHeading"]))
+    elements.append(Spacer(1, 5))
+    mammogram_image_path = mammogram.image.path
+    elements.append(Image(mammogram_image_path, width=80, height=80))
+    elements.append(Spacer(1, 15))
+
+    # mass attributes table
+    elements.append(Paragraph("Mass Attributes", styles["SubHeading"]))
+    attributes_data = [
+        ["Mass Shape", mammogram.mass_shape],
+        ["Mass Margin", mammogram.mass_margin],
+        ["Breast Density", mammogram.breast_density]
+    ]
+    attributes_table = Table(attributes_data, colWidths=[200, 300])
+    attributes_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), HexColor("#FFEEF0")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+    elements.append(attributes_table)
+    elements.append(Spacer(1, 15))
+
+    # mass attributes prediction
+    elements.append(Paragraph("Mass Attributes Prediction", styles["SubHeading"]))
+    elements.append(Paragraph(f"""
+    Based on mass attributes, the Random Forest Classifier predicted the diagnosis as 
+    <b>{mammogram.descriptive_diagnosis}</b>. The patient has a breast density of 
+    <b>{mammogram.breast_density}</b>.
+    """, styles["CustomBodyText"]))
+    elements.append(Spacer(1, 10))
+
+    # BIRADS assessment
+    elements.append(Paragraph("BIRADS Assessment", styles["SubHeading"]))
+    elements.append(Paragraph(f"""
+    The BIRADS model classifies the patient's cancer level as 
+    <b>{mammogram.birads_assessment}</b> with a probability of 
+    <b>{mammogram.probability_of_cancer}%</b>.
+    """, styles["CustomBodyText"]))
+    elements.append(Spacer(1, 10))
+
+    # recommendation
+    elements.append(Paragraph("Recommendations", styles["SubHeading"]))
+    elements.append(Paragraph("""
+    If the model's predictions align with the radiologist's assessment, 
+    further consultation with a healthcare provider is recommended.
+    """, styles["CustomBodyText"]))
+    elements.append(Spacer(1, 20))
+
+    footer_logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
+    elements.append(Image(footer_logo_path, width=50, height=25))
+    elements.append(Spacer(1, 5))
+
+    # footer text
+    footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
+    elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
+
     doc.build(elements)
 
     pdf = buffer.getvalue()
