@@ -8,8 +8,20 @@
     <link rel="stylesheet" href="{% static 'css/upload_image.css' %}">
 </head>
 <body>
-    <div class="logo-container">
-        <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+    <div class="header">
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            </a>
+        </div>
+        <div class="right-header">
+            <div class="btn">
+                <a href="#" class="btn-reports">View Reports</a>
+            </div>
+            <div class="login">
+                <a href="{% url 'login' %}" class="btn-login">Logged in as</a>
+            </div>
+        </div>
     </div>
     <div class="upload-container">
         <form id="upload-form" method="POST" enctype="multipart/form-data">

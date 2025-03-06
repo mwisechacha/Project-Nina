@@ -154,8 +154,8 @@ def generate_report_view(request, mammogram_id):
     # patient information
     elements.append(Paragraph("Patient Information", styles["SubHeading"]))
     patient_info_data = [
-        ["Patient Name:", patient.first_name + " " + patient.last_name],
-        ["Age:", str(patient.age)]
+        ["PATIENT NAME:", patient.first_name + " " + patient.last_name],
+        ["AGE:", str(patient.age)]
     ]
     patient_info_table = Table(patient_info_data, colWidths=[150, 300])
     patient_info_table.setStyle(TableStyle([
@@ -168,7 +168,7 @@ def generate_report_view(request, mammogram_id):
     elements.append(Spacer(1, 10))
 
     # findings and diagnosis
-    elements.append(Paragraph("<u>Summary Findings<u>", styles["SubHeading"]))
+    elements.append(Paragraph("<u>SUMMARY FINDINGS<u>", styles["SubHeading"]))
     findings_text = f"""
     The mammogram was analyzed using a ResNet18 model for image-based classification 
     and a Random Forest Classifier for mass attributes. The model predicted the diagnosis as 
@@ -178,14 +178,14 @@ def generate_report_view(request, mammogram_id):
     elements.append(Spacer(1, 10))
 
     # mammogram image
-    elements.append(Paragraph("Mammogram Image", styles["SubHeading"]))
+    elements.append(Paragraph("MAMMOGRAM IMAGE", styles["SubHeading"]))
     elements.append(Spacer(1, 5))
     mammogram_image_path = mammogram.image.path
     elements.append(Image(mammogram_image_path, width=80, height=80))
     elements.append(Spacer(1, 15))
 
     # mass attributes table
-    elements.append(Paragraph("Mass Attributes", styles["SubHeading"]))
+    elements.append(Paragraph("MASS ATTRIBUTES", styles["SubHeading"]))
     attributes_data = [
         ["Mass Shape", mammogram.mass_shape],
         ["Mass Margin", mammogram.mass_margin],
