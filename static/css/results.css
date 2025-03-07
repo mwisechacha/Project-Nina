@@ -115,6 +115,11 @@ a{
     border-radius: 10px;
 }
 
+p.prob-show{
+    margin: 0;
+    margin-bottom: 0;
+}
+
 .mass-attributes {
     display: grid;
     grid-template-columns: 1fr 1fr;

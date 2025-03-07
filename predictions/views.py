@@ -22,15 +22,16 @@ def upload_mammogram(request):
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
         if mammogram_form.is_valid():
-            first_name = request.POST.get('first_name')
-            last_name = request.POST.get('last_name')
-            patient_age = request.POST.get('patient_age')
+            first_name = request.POST.get('patient_first_name')
+            last_name = request.POST.get('patient_last_name')
+            age = request.POST.get('patient_age')
             patient, created = Patient.objects.get_or_create(
-                first_name=first_name,
-                last_name=last_name, age=patient_age)
+                first_name=first_name, last_name=last_name, defaults={'age': age}
+            )
             mammogram = mammogram_form.save(commit=False)
             mammogram.patient = patient
             mammogram.save()
+            print(mammogram.patient)
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
         else:
             print(mammogram_form.errors)
@@ -131,7 +132,7 @@ def generate_report_view(request, mammogram_id):
 
     styles = getSampleStyleSheet()
     styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, spaceAfter=10, alignment=1, fontName="Helvetica-Bold"))
-    styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold"))
+    styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold", underlineWidth=1, alignment=0))
     styles.add(ParagraphStyle(name="CustomBodyText", fontSize=12, leading=16, spaceAfter=10))
     styles.add(ParagraphStyle(name="TableHeader", fontSize=12, textColor=colors.white, backColor=HexColor("#FFEEF0"), alignment=1))
     styles.add(ParagraphStyle(name="Date", fontSize=12, textColor=colors.grey, alignment=TA_RIGHT))
@@ -154,7 +155,8 @@ def generate_report_view(request, mammogram_id):
     # patient information
     elements.append(Paragraph("Patient Information", styles["SubHeading"]))
     patient_info_data = [
-        ["PATIENT NAME:", patient.first_name + " " + patient.last_name],
+        ["FIRST NAME:", patient.first_name],
+        ["LAST NAME:", patient.last_name],
         ["AGE:", str(patient.age)]
     ]
     patient_info_table = Table(patient_info_data, colWidths=[150, 300])
@@ -168,7 +170,7 @@ def generate_report_view(request, mammogram_id):
     elements.append(Spacer(1, 10))
 
     # findings and diagnosis
-    elements.append(Paragraph("<u>SUMMARY FINDINGS<u>", styles["SubHeading"]))
+    elements.append(Paragraph("SUMMARY FINDINGS", styles["SubHeading"]))
     findings_text = f"""
     The mammogram was analyzed using a ResNet18 model for image-based classification 
     and a Random Forest Classifier for mass attributes. The model predicted the diagnosis as 
@@ -245,3 +247,7 @@ def generate_report_view(request, mammogram_id):
     response.write(pdf)
 
     return response
+
+def reports_view(request):
+    mammograms = Mammogram.objects.all()
+    return render(request, 'predictions/reports.html', {'mammograms': mammograms})

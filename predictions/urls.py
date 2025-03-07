@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import upload_mammogram, processing_view, predict_and_redirect_view, results_view, generate_report_view, get_conf_matrix_data
+from .views import upload_mammogram, processing_view, predict_and_redirect_view, results_view, generate_report_view, get_conf_matrix_data, reports_view
 
 urlpatterns = [
     path('upload/', upload_mammogram, name='upload_mammogram'),
@@ -7,5 +7,6 @@ urlpatterns = [
     path('predict/<uuid:mammogram_id>/', predict_and_redirect_view, name='predict_and_redirect'),
     path('confusion_matrix_data/', get_conf_matrix_data, name='confusion_matrix_data'),
     path('results/<uuid:mammogram_id>/', results_view, name='results'),
-    path('report/<uuid:mammogram_id>/', generate_report_view, name='generate_report'),
+    path('diagnosis_report/<uuid:mammogram_id>/', generate_report_view, name='generate_report'),
+    path('reports/', reports_view, name='reports'),
 ]

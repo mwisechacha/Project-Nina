@@ -92,16 +92,17 @@
 
                         <div class="results-probability">
                             <h1 class="model-title">Probability of Cancer</h1>
+                            <p class="prob-show">{{probability_of_cancer}}%</p>
                             <div class="progress-track" title="{{ probability_of_cancer}}%">
                                 <div class="progress-thumb"
-                                    style="width: {{ probability_of_cancer }}%;">{{ probability_of_cancer }}</div>
+                                    style="width: {{ probability_of_cancer }}%;"></div>
                             </div>
                             <p>{{ breast_density }}</p>
                         </div>
 
                         <div class="mass-attributes">
                             <ul>
-                                <li><strong><u>Mass Attributes</u></li>
+                                <li><strong><u>Mass Attributes</u></strong></li>
                                 <li>Breast Density</li>
                                 <li>Mass Margin</li>
                                 <li>Mass Shape</li>
