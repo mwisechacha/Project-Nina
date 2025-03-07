@@ -6,6 +6,7 @@
     <title>Upload Mammogram</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/upload_image.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="header">
@@ -19,7 +20,15 @@
                 <a href="{% url 'reports' %}" class="btn-reports">View Reports</a>
             </div>
             <div class="login">
-                <a href="{% url 'login' %}" class="btn-login">Logged in as</a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="btn-login">
+                        <i class="fas fa-user"></i> {{ user.username }}
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -37,6 +37,25 @@ body{
     text-decoration: none;
 }
 
+.login a {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #000000;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.btn-login i {
+    margin-right: 8px;
+    color: #FF4C6A;
+}
+
+.login a:hover {
+}
+
 .btn-reports{
     padding: 10px 20px;
     background-color: #FF4C6A;

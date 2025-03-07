@@ -9,6 +9,14 @@ body{
    
 }
 
+.header{
+    background-color: #FFEEF0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 18px;
+}
+
 .logo-container{
     background-color: #FFEEF0;
 }
@@ -17,6 +25,27 @@ body{
     height: 60px;
     width: auto;
     padding: 24px 48px 18px 48px;
+}
+
+.login a {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: #000000;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+}
+
+.login a i {
+    margin-right: 8px;
+    color: #FF4C6A;
+}
+
+.login a:hover {
 }
 
 .container{
