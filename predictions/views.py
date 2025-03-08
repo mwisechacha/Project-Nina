@@ -340,8 +340,98 @@ def weekly_summary_report(request):
     footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
     elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
+def generate_detailed_report():
+    detailed_data = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
+    return detailed_data
+
 def detailed_reports_view(request):
-    detailed_data = Mammogram.objects.select_related("patient")
+    detailed_data = generate_detailed_report()
+    return render(request, 'predictions/detailed_reports.html', {'detailed_data': detailed_data})
+
+def generate_detailed_report(request, mammogram_id):
+    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
+    patient = mammogram.patient
+    radiologist = mammogram.radiologist
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="{patient.first_name}{patient.last_name}_detailed_report_{mammogram_id}.pdf"'
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
+
+    styles = getSampleStyleSheet()
+    styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, spaceAfter=10, alignment=1, fontName="Helvetica-Bold"))
+    styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold", underlineWidth=1, alignment=0))
+    styles.add(ParagraphStyle(name="CustomBodyText", fontSize=12, leading=16, spaceAfter=10))
+    styles.add(ParagraphStyle(name="TableHeader", fontSize=12, textColor=colors.white, backColor=HexColor("#FFEEF0"), alignment=1))
+    styles.add(ParagraphStyle(name="Date", fontSize=12, textColor=colors.grey, alignment=TA_RIGHT))
+
+    elements = []
+
+    # add logo
+    logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
+    elements.append(Image(logo_path, width=100, height=50))
+    elements.append(Spacer(1, 5))
+    
+    logo_description = "Nina Breast Cancer Detection System"
+    elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
+    elements.append(Spacer(1, 12))
+    
+    elements.append(Paragraph("Breast Cancer Detailed Report", styles['CenteredHeading']))
+    elements.append(Spacer(1, 20))
+
+    # fetch data
+    mammograms = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
+
+    data = [
+        ["Patient Name", "Age", "Radiologist", "Uploaded At", "Model Diagnosis", "Descriptive Diagnosis", "BIRADS Assessment", "Probability of Cancer"]
+    ]
+
+    for entry in mammograms:
+        data.append([entry.patient.name, 
+                     entry.patient.age,
+                     entry.radiologist.name if entry.radiologist else "N/A",
+                     entry.uploaded_at.strftime("%Y-%m-%d %H:%M:%S"),
+                     entry.model_diagnosis,
+                     entry.descriptive_diagnosis,
+                     entry.birads_assessment,
+                     entry.probability_of_cancer
+                ])
+        
+    table = Table(data, colWidths=[100, 50, 100, 100, 100, 100, 100, 100])
+    table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), HexColor("#FFEEF0")),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black)
+    ]))
+
+    elements.append(table)
+    elements.append(Spacer(1, 15))
+
+    footer_logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
+    elements.append(Image(footer_logo_path, width=50, height=25))
+    elements.append(Spacer(1, 5))
+
+    # footer text
+    footer_text = "Nina Breast Cancer Detection System"
+    elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
+
+    doc.build(elements)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    response.write(pdf)
+
+    return response
+
+    
+
 def reports_view(request):
     weekly_summary = generate_weekly_summary()
-    return render(request, 'predictions/reports.html', {'weekly_summary': weekly_summary})
+    detailed_report = generate_detailed_report()
+    return render(request, 'predictions/reports.html', {'weekly_summary': weekly_summary,
+                                                        'detailed_report': detailed_report})

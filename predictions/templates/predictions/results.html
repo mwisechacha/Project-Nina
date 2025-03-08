@@ -125,7 +125,16 @@
                                 <li>{{ mammogram.mass_margin}}</li>
                         </ul>
 
-                        <a href="{% url 'upload_mammogram' %}" class="upload-button">Upload another image</a>
+                        <div style="display: flex; align-items: flex-end; gap: 1rem;">
+                            <a href="{% url 'upload_mammogram' %}" class="upload-button">Upload another image</a>
+
+                            <a href="{% url 'login' %}" class="approve-button">
+                                <i class="fas fa-thumbs-up"></i>
+                            </a>
+                            <a href="{% url 'login' %}" class="approve-button">
+                                <i class="fas fa-thumbs-down"></i>
+                            </a>
+                        </div>
                         
                         
                     </section>

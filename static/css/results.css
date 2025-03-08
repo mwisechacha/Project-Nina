@@ -161,6 +161,18 @@ p.prob-show{
     cursor: pointer;
     text-decoration: none;
     margin-top: 20px;
+    margin-right: auto;
+}
+
+.approve-button{
+    color: #707070;
+    font-size: 1.75rem;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.approve-button:hover{
+    color: #FF4C6A;
 }
 
 .model-results p{
