@@ -43,4 +43,14 @@ class GroundTruth(models.Model):
 
     def __str__(self):
         return f"{self.image_id} {'Benign' if self.label == 0 else 'Malignant'}"
+    
+class WeeklySummary(models.Model):
+    week_start = models.DateField()
+    week_end = models.DateField()
+    total_patients = models.IntegerField(default=0)
+    benign_cases = models.IntegerField(default=0)
+    malignant_cases = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"Summary for {self.week_start} to {self.week_end}"
 
