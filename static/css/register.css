@@ -62,7 +62,6 @@ body{
     margin-bottom: 15px;
     text-align: left;
     align-items: center;
-    /* gap: 24px; */
 }
 
 .form-group label{
@@ -91,6 +90,10 @@ body{
     width: 100%;
 }
 
+.form-name{
+    display: flex;
+    gap: 24px;
+}
 .password-group{
     display: flex;
     justify-content: space-between;

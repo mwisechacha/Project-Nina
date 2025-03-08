@@ -5,6 +5,7 @@ from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, RequestDemoForm
+from predictions.models import Radiologist
 from django.core.mail import EmailMessage
 from django.conf import settings
 import os
@@ -20,7 +21,8 @@ def register_view(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            Radiologist.objects.create(user=user)
             messages.success(request, 'Account created successfully. Please login.')
             if image_id:
                 return HttpResponseRedirect(reverse('upload_mammogram', f'?image_id={image_id}'))

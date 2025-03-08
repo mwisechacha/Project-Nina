@@ -27,7 +27,8 @@
                     <div class="form-group">
                         <label for="username">username</label>
                         <input type="username" name="username" id="username" required
-                        class="{% if form.username.errors %}error{% endif %}">
+                        class="{% if form.username.errors %}error{% endif %}"
+                        default="{{ form.username.value }}">
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>

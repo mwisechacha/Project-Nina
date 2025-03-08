@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
 from django.urls import reverse
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.timezone import now, timedelta
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -12,7 +13,7 @@ from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_RIGHT
 from .forms import MammogramForm
-from .models import Mammogram, ModelMetrics, Patient, WeeklySummary
+from .models import Mammogram, ModelMetrics, Patient, WeeklySummary, Radiologist
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 from .utils import get_conf_matrix_data
@@ -29,8 +30,13 @@ def upload_mammogram(request):
             patient, created = Patient.objects.get_or_create(
                 first_name=first_name, last_name=last_name, defaults={'age': age}
             )
+            try:
+                radiologist = Radiologist.objects.get(user=request.user)
+            except ObjectDoesNotExist:
+                radiologist = Radiologist.objects.create(user=request.user)  
             mammogram = mammogram_form.save(commit=False)
             mammogram.patient = patient
+            mammogram.radiologist = radiologist
             mammogram.save()
             print(mammogram.patient)
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
@@ -334,7 +340,8 @@ def weekly_summary_report(request):
     footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
     elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-
+def detailed_reports_view(request):
+    detailed_data = Mammogram.objects.select_related("patient")
 def reports_view(request):
     weekly_summary = generate_weekly_summary()
     return render(request, 'predictions/reports.html', {'weekly_summary': weekly_summary})

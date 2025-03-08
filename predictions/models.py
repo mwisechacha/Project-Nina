@@ -1,5 +1,14 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.conf import settings
 import uuid
+
+class Radiologist(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"Radiologist {self.user.username}"
+
 
 class Patient(models.Model):
     first_name = models.CharField(max_length=100, null=True, blank=True)
@@ -12,6 +21,7 @@ class Patient(models.Model):
 
 class Mammogram(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE, related_name='mammograms', default=None)
+    radiologist = models.ForeignKey(Radiologist, on_delete=models.SET_NULL, null=True, blank=True, related_name='mammograms')
     image_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     image = models.ImageField(upload_to='prediction/images/')
     uploaded_at = models.DateTimeField(auto_now_add=True)

@@ -114,22 +114,19 @@
                             <p>{{ breast_density }}</p>
                         </div>
 
-                        <div class="mass-attributes">
-                            <ul>
+                        <ul class="mass-attributes">
                                 <li><strong><u>Mass Attributes</u></strong></li>
-                                <li>Breast Density</li>
-                                <li>Mass Margin</li>
-                                <li>Mass Shape</li>
-                            </ul>
-                            <ul style="font-weight: bold;">
                                 <li><strong><u>Values</u></strong></li>
+                                <li>Breast Density</li>
                                 <li>{{ breast_density_category }}</li>
+                                <li>Mass Margin</li>
                                 <li>{{ mammogram.mass_shape}}</li>
+                                <li>Mass Shape</li>
                                 <li>{{ mammogram.mass_margin}}</li>
-                            </ul> 
-                        </div>
+                        </ul>
 
                         <a href="{% url 'upload_mammogram' %}" class="upload-button">Upload another image</a>
+                        
                         
                     </section>
             </div>
