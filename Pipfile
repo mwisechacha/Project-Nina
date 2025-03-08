@@ -13,6 +13,7 @@ pandas = "*"
 joblib = "*"
 scikit-learn = "*"
 reportlab = "*"
+opencv-python = "*"
 
 [dev-packages]
 
