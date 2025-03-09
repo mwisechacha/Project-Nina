@@ -5,8 +5,9 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Avg, Count
+from django.db.models import Count
 from django.utils.timezone import now, timedelta
+from statistics import mean
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
@@ -27,9 +28,10 @@ def upload_mammogram(request):
         if mammogram_form.is_valid():
             first_name = request.POST.get('patient_first_name')
             last_name = request.POST.get('patient_last_name')
-            age = request.POST.get('patient_age')
+            date_of_birth = request.POST.get('patient_dob')
             patient, created = Patient.objects.get_or_create(
-                first_name=first_name, last_name=last_name, defaults={'age': age}
+                first_name=first_name, last_name=last_name,
+                date_of_birth=date_of_birth
             )
             try:
                 radiologist = Radiologist.objects.get(user=request.user)
@@ -292,7 +294,19 @@ def generate_weekly_summary():
         }
 
         # additional metrics
-        average_age = weekly_data.aggregate(avg_age=Avg('patient__age'))['avg_age']
+        birth_dates = weekly_data.values_list('patient__date_of_birth', flat=True)
+
+        ages = []
+        current_date = now().date()
+
+        for birth_date in birth_dates:
+            if birth_date:
+                age = current_date.year - birth_date.year
+                if (birth_date.month, birth_date.day) > (current_date.month, current_date.day):
+                    age -= 1
+                ages.append(age)
+
+        average_age = mean(ages) if ages else None
         breast_density_distribution = weekly_data.values('breast_density').annotate(count=Count('breast_density'))
 
         # store summary
@@ -382,7 +396,7 @@ def weekly_summary_report(request):
 
 def detailed_reports_view(request):
     detailed_data = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
-    return render(request, 'predictions/detailed_reports.html', {'detailed_data': detailed_data})
+    return render(request, 'predictions/detailed_report.html', {'detailed_data': detailed_data})
 
 def generate_detailed_report(request):
     mammograms = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')

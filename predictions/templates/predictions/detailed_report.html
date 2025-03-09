@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detailed Report</title>
+    {% load static %}
+    {% load custom_filters %}
+    <link rel="stylesheet" href="{% static 'css/weekly_summary.css' %}">
+</head>
+<body style="padding: 80px;">
+    <div class="header" style="padding-top: 0;">
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            </a>
+        </div>
+        <div class="logo-description">
+            <h1>Nina Breast Cancer Detection System</h1>
+        </div>
+       </div>
+
+       <div class="detailed-body">
+        <h1 style="text-align: center;"><u>Detailed Report</u></h1>
+        <h3 style="text-align: center;">Report showing each mammogram analysis, including patient information, the radiologist, diagnosis, mass attributes and the BIRADS Assessment</h3>
+        <table>
+            <tr>
+                <th>Patient Name</th>
+                <th>Age</th>
+                <th>Mass Shape</th>
+                <th>Mass Margin</th>
+                <th>Breast Density</th>
+                <th>BI-RADS Assessment</th>
+                <th>Diagnosis</th>
+                <th>Probability of Cancer</th>
+                <th>Radiologist</th>
+            </tr>
+            {% for data in detailed_data %}
+            <tr>
+                <td>{{ data.patient.first_name }} {{ data.patient.last_name}}</td>
+                <td>{{ data.patient.age }}</td>
+                <td>{{ data.mass_shape|lower }}</td>
+                <td>{{ data.mass_margin|lower }}</td>
+                <td>{{ data.breast_density }}</td>
+                <td>{{ data.model_diagnosis }}</td>
+                <td>{{ data.birads_assessment }}</td>
+                <td>{{ data.probability_of_cancer}}%</td>
+                <td>{{ data.radiologist.user.first_name }} {{data.radiologist.user.last_name}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+       </div>
+
+       <div class="footer">
+        <div class="footer-logo">
+            <a href="{% url 'home' %}">
+                <img style="padding: 10px;" src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            </a>
+        </div>
+        <div class="footer-description">
+            <h1>Nina Breast Cancer Detection System</h1>
+       </div>
+    
+</body>
+</html>
