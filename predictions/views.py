@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Avg, Count
 from django.utils.timezone import now, timedelta
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -268,6 +269,32 @@ def generate_weekly_summary():
         malignant_cases = weekly_data.filter(model_diagnosis='Malignant').count()
         total_patients = weekly_data.count()
 
+        # daily breakdown
+        daily_breakdown = []
+        for i in range(7):
+            day = week_start + timedelta(days=i)
+            day_data = weekly_data.filter(uploaded_at__date=day)
+            daily_breakdown.append({
+                'day': day,
+                'benign_cases': day_data.filter(model_diagnosis='Benign').count(),
+                'malignant_cases': day_data.filter(model_diagnosis='Malignant').count(),
+                'total_patients': day_data.count()
+            })
+
+        # previous week data
+        previous_week_start = week_start - timedelta(days=7)
+        previous_week_end = week_end - timedelta(days=7)
+        previous_week_data = Mammogram.objects.filter(uploaded_at__range=[previous_week_start, previous_week_end])
+        previous_week_summary = {
+            'benign_cases': previous_week_data.filter(model_diagnosis='Benign').count(),
+            'malignant_cases': previous_week_data.filter(model_diagnosis='Malignant').count(),
+            'total_patients': previous_week_data.count()
+        }
+
+        # additional metrics
+        average_age = weekly_data.aggregate(avg_age=Avg('patient__age'))['avg_age']
+        breast_density_distribution = weekly_data.values('breast_density').annotate(count=Count('breast_density'))
+
         # store summary
         summary, created = WeeklySummary.objects.get_or_create(
             week_start=week_start, week_end=week_end,
@@ -278,11 +305,23 @@ def generate_weekly_summary():
             }
         )
 
-        return summary
+        return summary, daily_breakdown, previous_week_summary, average_age, breast_density_distribution
 
 def weekly_summary_view(request):
-    weekly_summary = generate_weekly_summary()
-    return render(request, 'predictions/weekly_summary.html', {'weekly_summary': weekly_summary})
+    weekly_summary, daily_breakdown, previous_week, average_age, breast_density_distribution = generate_weekly_summary()
+    context = {
+        'weekly_summary': weekly_summary,
+        'total_patients': weekly_summary.total_patients,
+        'benign_cases': weekly_summary.benign_cases,
+        'malignant_cases': weekly_summary.malignant_cases,
+        'start_week': weekly_summary.week_start,
+        'end_week': weekly_summary.week_end,
+        'daily_breakdown': daily_breakdown,
+        'previous_week': previous_week,
+        'average_age': average_age,
+        'breast_density_distribution': breast_density_distribution
+    }
+    return render(request, 'predictions/weekly_summary.html', context)
 
 def weekly_summary_report(request):
     summary = generate_weekly_summary()

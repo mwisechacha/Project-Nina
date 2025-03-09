@@ -3,10 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    {% load custom_filters %}
     <title>Weekly Summary Report</title>
+    <link rel="stylesheet" href="{% static 'css/weekly_summary.css' %}">
 </head>
 <body>
-    
+   <div class="header">
+    <div class="logo">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+        </a>
+    </div>
+    <div class="logo-description">
+        <h1>Nina Breast Cancer Detection System</h1>
+    </div>
+   </div>
+   <div class="summary-body">
+    <h1><u>Weekly Summary Report</u></h1>
+    <h3>Weekly Summary Report for the week {{start_week}} to {{end_week}}</h3>
+    <table>
+        <tr>
+            <th>Benign Cases</th>
+            <th>Malignant Cases</th>
+            <th>Total Patients</th>
+        </tr>
+        <tr>
+            <td>{{benign_cases}}</td>
+            <td>{{malignant_cases}}</td>
+            <td>{{total_patients}}</td>
+        </tr>
+    </table>
+     <table>
+        <tr>
+            <th>Day</th>
+            <th>Benign Cases</th>
+            <th>Malignant Cases</th>
+            <th>Total Patients</th>
+        </tr>
+        {% for day in daily_breakdown %}
+        <tr>
+            <td>{{ day.day }}</td>
+            <td>{{ day.benign_cases }}</td>
+            <td>{{ day.malignant_cases }}</td>
+            <td>{{ day.total_patients }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h3>Comparison with Previous Week</h3>
+    <table>
+        <tr>
+            <th>Metric</th>
+            <th>Previous Week</th>
+            <th>Current Week</th>
+            <th>Change</th>
+        </tr>
+        <tr>
+            <td>Total Patients</td>
+            <td>{{ previous_week.total_patients }}</td>
+            <td>{{ total_patients }}</td>
+            <td>{{ total_patients|subtract:previous_week.total_patients }}</td>
+        </tr>
+        <tr>
+            <td>Benign Cases</td>
+            <td>{{ previous_week.benign_cases }}</td>
+            <td>{{ benign_cases }}</td>
+            <td>{{ benign_cases|subtract:previous_week.benign_cases }}</td>
+        </tr>
+        <tr>
+            <td>Malignant Cases</td>
+            <td>{{ previous_week.malignant_cases }}</td>
+            <td>{{ malignant_cases }}</td>
+            <td>{{ malignant_cases|subtract:previous_week.malignant_cases }}</td>
+        </tr>
+    </table>
+
+    <h3>Additional Metrics</h3>
+    <table>
+        <tr>
+            <th>Metric</th>
+            <th>Value</th>
+        </tr>
+        <tr>
+            <td>Average Age of Patients</td>
+            <td>{{ average_age }}</td>
+        </tr>
+        <tr>
+            <td>Distribution of Breast Density Categories</td>
+            <td>
+                {% for density in breast_density_distribution %}
+                {{ density.breast_density }} : {{ density.count }}<br>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+   </div>
+   </div>
+
+   <div class="footer">
+    <div class="footer-logo">
+        <a href="{% url 'home' %}">
+            <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+        </a>
+    </div>
+    <div class="footer-description">
+        <h1>Nina Breast Cancer Detection System</h1>
+   </div>
     
 </body>
 </html>
