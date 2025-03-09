@@ -340,21 +340,16 @@ def weekly_summary_report(request):
     footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
     elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-def generate_detailed_report():
-    detailed_data = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
-    return detailed_data
 
 def detailed_reports_view(request):
-    detailed_data = generate_detailed_report()
+    detailed_data = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
     return render(request, 'predictions/detailed_reports.html', {'detailed_data': detailed_data})
 
-def generate_detailed_report(request, mammogram_id):
-    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
-    patient = mammogram.patient
-    radiologist = mammogram.radiologist
+def generate_detailed_report(request):
+    mammograms = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
 
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="{patient.first_name}{patient.last_name}_detailed_report_{mammogram_id}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="detailed_report.pdf"'
 
     buffer = BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -388,14 +383,16 @@ def generate_detailed_report(request, mammogram_id):
     ]
 
     for entry in mammograms:
-        data.append([entry.patient.name, 
-                     entry.patient.age,
-                     entry.radiologist.name if entry.radiologist else "N/A",
-                     entry.uploaded_at.strftime("%Y-%m-%d %H:%M:%S"),
-                     entry.model_diagnosis,
-                     entry.descriptive_diagnosis,
-                     entry.birads_assessment,
-                     entry.probability_of_cancer
+        radiologist_name = f"Dr. {entry.radiologist.user.first_name} {entry.radiologist.user.last_name}" if entry.radiologist else "N/A"
+        data.append([
+            f"{entry.patient.first_name} {entry.patient.last_name}", 
+            entry.patient.age,
+            radiologist_name,
+            entry.uploaded_at.strftime("%Y-%m-%d %H:%M:%S"),
+            entry.model_diagnosis,
+            entry.descriptive_diagnosis,
+            entry.birads_assessment,
+            entry.probability_of_cancer
                 ])
         
     table = Table(data, colWidths=[100, 50, 100, 100, 100, 100, 100, 100])
@@ -432,6 +429,6 @@ def generate_detailed_report(request, mammogram_id):
 
 def reports_view(request):
     weekly_summary = generate_weekly_summary()
-    detailed_report = generate_detailed_report()
+    detailed_report = generate_detailed_report(request)
     return render(request, 'predictions/reports.html', {'weekly_summary': weekly_summary,
                                                         'detailed_report': detailed_report})
