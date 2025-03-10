@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
+from django.utils import timezone
 from statistics import mean
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -14,7 +15,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, Tabl
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_RIGHT
-from .forms import MammogramForm
+from .forms import MammogramForm, DisapproveForm
 from .models import Mammogram, ModelMetrics, Patient, WeeklySummary, Radiologist
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
@@ -28,7 +29,7 @@ def upload_mammogram(request):
         if mammogram_form.is_valid():
             first_name = request.POST.get('patient_first_name')
             last_name = request.POST.get('patient_last_name')
-            date_of_birth = request.POST.get('patient_dob')
+            date_of_birth = request.POST.get('patient_date_of_birth')
             patient, created = Patient.objects.get_or_create(
                 first_name=first_name, last_name=last_name,
                 date_of_birth=date_of_birth
@@ -40,6 +41,7 @@ def upload_mammogram(request):
             mammogram = mammogram_form.save(commit=False)
             mammogram.patient = patient
             mammogram.radiologist = radiologist
+            mammogram.uploaded_at = timezone.now()
             mammogram.save()
             print(mammogram.patient)
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
@@ -92,6 +94,34 @@ def confusion_matrix_data(request):
 
 def results_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
+    if request.method == 'POST':
+        form = DisapproveForm(request.POST)
+        if form.is_valid():
+            pathology_actual = form.cleaned_data['pathology_actual']
+            pathology_predicted = form.cleaned_data['pathology_predicted']
+            descriptive_actual = form.cleaned_data['descriptive_actual']
+            descriptive_prediction = form.cleaned_data['descriptive_prediction']
+            birads_actual = form.cleaned_data['birads_actual']
+            birads_prediction = form.cleaned_data['birads_prediction']
+            comments = form.cleaned_data['comments']
+
+            mammogram.pathology_actual = pathology_actual
+            mammogram.pathology_predicted = pathology_predicted
+            mammogram.descriptive_actual = descriptive_actual
+            mammogram.descriptive_prediction = descriptive_prediction
+            mammogram.birads_actual = birads_actual
+            mammogram.birads_prediction = birads_prediction
+            mammogram.comments = comments
+            mammogram.approved = False
+            mammogram.save()
+
+            return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
+    else:
+        form = DisapproveForm(initial={
+            'pathology_predicted': mammogram.model_diagnosis,
+            'descriptive_prediction': mammogram.descriptive_diagnosis,
+            'birads_prediction': mammogram.birads_assessment,
+    })
 
     # query metrics
     benign_count, malignant_count, total_count = get_mammogram_stats()
@@ -125,10 +155,17 @@ def results_view(request, mammogram_id):
         'malignant_count': malignant_count,
         'total_count': total_count,
         'metrics': metrics,
-        'confusion_matrix_data_url': reverse('confusion_matrix_data')
+        'confusion_matrix_data_url': reverse('confusion_matrix_data'),
+        'form': form
     }
 
     return render(request, 'predictions/results.html' , context)
+
+def approve_results_view(request, mammogram_id):
+    mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
+    mammogram.approved = True
+    mammogram.save()
+    return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
 
 def generate_report_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)

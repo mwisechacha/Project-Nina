@@ -128,15 +128,13 @@
                         <div style="display: flex; align-items: flex-end; gap: 1rem;">
                             <a href="{% url 'upload_mammogram' %}" class="upload-button">Upload another image</a>
 
-                            <a href="{% url 'login' %}" class="approve-button">
+                            <a href="{% url 'approve' mammogram.image_id %}" class="approve-button">
                                 <i class="fas fa-thumbs-up"></i>
                             </a>
-                            <a href="{% url 'login' %}" class="approve-button">
+                            <button id="disapproveBtn" class="approve-button" style="border: none; background-color: #FFEEF0;">
                                 <i class="fas fa-thumbs-down"></i>
-                            </a>
+                            </button>
                         </div>
-                        
-                        
                     </section>
             </div>
                 <div class="image">
@@ -145,10 +143,90 @@
         </div>
     </div>
 
+    <!-- disapprove modal -->
+    <div id="disapproveModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Disapprove Mammogram Results</h2>
+            <form action="{% url 'disapprove' mammogram.image_id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-form">
+                    <div class="modal-form-group">
+                        <h3>Model Predictions</h3>
+                    </div>
+                    <div class="modal-form-group">
+                        <h3>Radiologist's Ground Truth</h3>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>Pathology</label>
+                        <p>{{ prediction }}</p>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="pathology_actual">Pathology</label>
+                        <select name="pathology_actual" id="pathology_actual">
+                            {% for value, label in form.pathology_actual.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>Mass Description</label>
+                        <p>{{ describe_prediction }}</p>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="descriptive_actual">Mass Description</label>
+                        <select name="descriptive_actual" id="descriptive_actual">
+                            {% for value, label in form.descriptive_actual.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-form-group">
+                        <label>BIRADS Assessment</label>
+                        <p>{{ birads_assessment }}</p>
+                    </div>
+                    <div class="modal-form-group">
+                        <label for="birads_actual">BIRADS ASSESSMENT</label>
+                        <select name="birads_actual" id="birads_actual">
+                            {% for value, label in form.birads_actual.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                    <div class="modal-form-group">
+                        <div class="comment-section">
+                            <label for="comments">Additional Comments</label>
+                            <textarea name="comments" id="comments" cols="30" rows="10" placeholder="type here..."></textarea>
+                            <button type="submit" class="submit-button">Submit</button>
+                        </div>
+                    </div>              
+                </form>
+            </div>     
+        </div>
+
     <footer style="margin: 0;">
         <h1>Advanced Analytics</h1>
     </footer>  
     <script type="module">
+        var modal = document.getElementById("disapproveModal");
+        var btn = document.getElementById("disapproveBtn");
+        var span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
         import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
         document.querySelectorAll('.nav-link').forEach(link => {
             link.addEventListener('click', function(event){

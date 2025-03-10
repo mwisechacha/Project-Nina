@@ -42,15 +42,18 @@
             <div class="patient-details">
                 <div class="patient">
                     <label for="patient_name">Patient First Name</label>
-                    <input type="text" name="patient_first_name" id="patient_first_name" required>
+                    <input type="text" name="patient_first_name" id="patient_first_name" required
+                    default="{{ user.first_name }}">
                 </div>
                 <div class="patient">
                     <label for="patient_last_name">Patient Last Name</label>
-                    <input type="text" name="patient_last_name" id="patient_last_name" required>
+                    <input type="text" name="patient_last_name" id="patient_last_name" required
+                    default="{{ user.last_name }}">
                 </div>
                 <div class="patient">
-                    <label for="patient_age">Patient Date of Birth</label>
-                    <input type="date" name="patient_dob" id="patient_dob" required>
+                    <label for="patient_date_of_birth">Patient Date of Birth</label>
+                    <input type="date" name="patient_date_of_birth" id="patient_date_of_birth" required
+                    default="{{ user.profile.dob }}">
                 </div>
             </div>
             <div class="drag-zone">
@@ -110,7 +113,7 @@
                         <option value="OVAL">OVAL</option>
                         <option value="LOBULATED">LOBULATED</option>
                         <option value="ROUND">ROUND</option>
-                        <option value="ARCHITECTURAL_DISTORTATION">ARCHITECTURAL DISTORTATION</option>
+                        <option value="ARCHITECTURAL_DISTORTION">ARCHITECTURAL DISTORTION</option>
                         <option value="IRREGULAR-ARCHITECTURAL_DISTORTION">IRREGULAR-ARCHITECTURAL DISTORTION</option>
                         <option value="LYMPH_NODE">LYMPH NODE</option>
                         <option value="ASYMMETRIC_BREAST_TISSUE">ASYMMETRIC BREAST TISSUE</option>
