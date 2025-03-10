@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% load static %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exceptional Reports</title>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            </a>
+        </div>
+        <div class="logo-description">
+            <h1>Nina Breast Cancer Detection System</h1>
+        </div>
+    </div>
+    <div class="exce-body">
+        <h1><u>Exceptional Report</u></h1>
+        <h3>These reports highlight the cases where the radiologist's assessment 
+            differed from the model's prediction. The purpose of this report is to 
+            identify and analyze discrepancies to improve the accuracy and reliability
+            of the breast cancer detection system.</h3>
+        <table>
+            <tr>
+                <th>Patient</th>
+                <th>Patient Age</th>
+                <th>Model Diagnosis</th>
+                <th>Actual Diagnosis</th>
+                <th>Model Descriptive Diagnosis</th>
+                <th>Actual Descriptive Diagnosis</th>
+                <th>Model BIRADS</th>
+                <th>Actual BIRADS</th>
+                <th>Comments</th>
+                <th>Uploaded at</th>
+            </tr>
+            {% for disapproved in disapproved_mammograms %}
+            <tr>
+                <td>{{ disapproved.patient.first_name }} {{ disapproved.patient.last_name }}</td>
+                <td>{{ disapproved.patient.age }}</td>
+                <td>{{ disapproved.mammogram.radiologist.user.first_name }} {{ disapproved.mammogram.radiologist.user.last_name }}</td>
+                <td>{{ disapproved.mammogram.model_diagnosis }}</td>
+                <td>{{ disapproved.pathology_actual }}</td>
+                <td>{{ disapproved.mammogram.descriptive_diagnosis }}</td>
+                <td>{{ disapproved.descriptive_actual }}</td>
+                <td>{{ disapproved.mammogram.birads_assessment }}</td>
+                <td>{{ disapproved.birads_actual }}</td>
+                <td>{{ disapproved.comments }}</td>
+                <td>{{ disapproved.mammogram.uploaded_at }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="footer">
+        <div class="footer-logo">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
+            </a>
+        </div>
+        <div class="footer-description">
+            <h1>Nina Breast Cancer Detection System</h1>
+       </div>
+    </div>
+</body>
+</html>

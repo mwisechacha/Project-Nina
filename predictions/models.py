@@ -41,6 +41,7 @@ class Mammogram(models.Model):
     descriptive_diagnosis = models.CharField(max_length=100, blank=True, null=True)
     birads_assessment = models.CharField(max_length=100, blank=True, null=True)
     probability_of_cancer = models.IntegerField(blank=True, null=True)
+    approved = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if not self.uploaded_at:
@@ -49,6 +50,16 @@ class Mammogram(models.Model):
 
     def __str__(self):
         return f"Mammogram for Patient {self.image_id} uploaded at {self.uploaded_at}"
+    
+class DisapprovedMammogram(models.Model):
+    mammogram = models.OneToOneField(Mammogram, on_delete=models.CASCADE, related_name='disapproved_mammograms')
+    pathology_actual = models.CharField(max_length=100, blank=True, null=True)
+    descriptive_actual = models.CharField(max_length=100, blank=True, null=True)
+    birads_actual = models.CharField(max_length=100, blank=True, null=True)
+    comments = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"Disapproved Mammogram for Patient {self.mammogram.image_id}"
     
 class ModelMetrics(models.Model):
     model_name = models.CharField(max_length=100)

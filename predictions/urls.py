@@ -13,4 +13,5 @@ urlpatterns = [
     path('reports/', views.reports_view, name='reports'),
     path('reports/weekly/', views.weekly_summary_view, name='weekly_summary'),
     path('reports/detail_report/', views.detailed_reports_view, name='detailed_reports'),
+    path('reports/exceptional_report/', views.exceptional_reports_view, name='exceptional_reports'),
 ]

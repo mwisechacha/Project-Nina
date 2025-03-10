@@ -16,7 +16,7 @@ from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_RIGHT
 from .forms import MammogramForm, DisapproveForm
-from .models import Mammogram, ModelMetrics, Patient, WeeklySummary, Radiologist
+from .models import Mammogram, ModelMetrics, Patient, WeeklySummary, Radiologist, DisapprovedMammogram
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 from .utils import get_conf_matrix_data
@@ -95,27 +95,30 @@ def confusion_matrix_data(request):
 def results_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
     if request.method == 'POST':
-        form = DisapproveForm(request.POST)
-        if form.is_valid():
-            pathology_actual = form.cleaned_data['pathology_actual']
-            pathology_predicted = form.cleaned_data['pathology_predicted']
-            descriptive_actual = form.cleaned_data['descriptive_actual']
-            descriptive_prediction = form.cleaned_data['descriptive_prediction']
-            birads_actual = form.cleaned_data['birads_actual']
-            birads_prediction = form.cleaned_data['birads_prediction']
-            comments = form.cleaned_data['comments']
-
-            mammogram.pathology_actual = pathology_actual
-            mammogram.pathology_predicted = pathology_predicted
-            mammogram.descriptive_actual = descriptive_actual
-            mammogram.descriptive_prediction = descriptive_prediction
-            mammogram.birads_actual = birads_actual
-            mammogram.birads_prediction = birads_prediction
-            mammogram.comments = comments
-            mammogram.approved = False
+        if 'approve' in request.POST:
+            mammogram.approved = True
             mammogram.save()
-
             return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
+        else:
+            form = DisapproveForm(request.POST)
+            if form.is_valid():
+                pathology_actual = form.cleaned_data['pathology_actual']
+                descriptive_actual = form.cleaned_data['descriptive_actual']
+                birads_actual = form.cleaned_data['birads_actual']
+                comments = form.cleaned_data['comments']
+
+                disapproved_record = DisapprovedMammogram.objects.create(
+                    mammogram=mammogram,
+                    pathology_actual=pathology_actual,
+                    descriptive_actual=descriptive_actual,
+                    birads_actual=birads_actual,
+                    comments=comments
+                )
+
+                mammogram.approved = False
+                mammogram.save()
+
+                return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
     else:
         form = DisapproveForm(initial={
             'pathology_predicted': mammogram.model_diagnosis,
@@ -515,7 +518,9 @@ def generate_detailed_report(request):
 
     return response
 
-    
+def exceptional_reports_view(request):
+    disapproved_mammograms = DisapprovedMammogram.objects.select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
+    return render(request, 'predictions/exceptional_reports.html', {'disapproved_mammograms': disapproved_mammograms})
 
 def reports_view(request):
     weekly_summary = generate_weekly_summary()
