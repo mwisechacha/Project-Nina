@@ -15,21 +15,19 @@
                 <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
             </a>
         </div>
-        <div class="right-header">
-            <div class="btn">
-                <a href="{% url 'reports' %}" class="btn-reports">View Reports</a>
-            </div>
-            <div class="login">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'logout' %}" class="btn-login">
-                        <i class="fas fa-user"></i> {{ user.username }}
-                    </a>
-                {% else %}
-                    <a href="{% url 'login' %}" class="btn-login">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                {% endif %}
-            </div>
+        <div class="login">
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn-login">
+                    <i class="fas fa-user"></i>{{ user.username }}
+                </button>
+            </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            {% endif %}
         </div>
     </div>
     <div class="upload-container">

@@ -27,7 +27,7 @@ body{
     padding: 24px 48px 18px 48px;
 }
 
-.login a {
+.btn-login {
     font-family: 'Open Sans', sans-serif;
     font-size: 18px;
     font-weight: 400;
@@ -38,15 +38,15 @@ body{
     transition: background-color 0.3s ease;
     display: flex;
     align-items: center;
+    background: transparent;
+    border: 0;
 }
 
-.login a i {
+.btn-login i {
     margin-right: 8px;
     color: #FF4C6A;
 }
 
-.login a:hover {
-}
 
 .container{
     background-color: #FFEEF0;
