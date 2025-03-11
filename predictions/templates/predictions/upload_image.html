@@ -15,19 +15,24 @@
                 <img src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
             </a>
         </div>
-        <div class="login">
-            {% if user.is_authenticated %}
-            <form method="POST" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit" class="btn-login">
-                    <i class="fas fa-user"></i>{{ user.username }}
-                </button>
-            </form>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn-login">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-            {% endif %}
+        <div class="right-header">
+            <div class="btn">
+                <a href="{% url 'reports' %}" class="btn-reports">View Reports</a>
+            </div>
+            <div class="login">
+                {% if user.is_authenticated %}
+                <form method="POST" action="{% url 'logout' %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-login">
+                        <i class="fas fa-user"></i>{{ user.username }}
+                    </button>
+                </form>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-login">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
     <div class="upload-container">
@@ -41,17 +46,17 @@
                 <div class="patient">
                     <label for="patient_name">Patient First Name</label>
                     <input type="text" name="patient_first_name" id="patient_first_name" required
-                    default="{{ user.first_name }}">
+                    value="{{ form.first_name.value|default_if_none:'' }}">
                 </div>
                 <div class="patient">
                     <label for="patient_last_name">Patient Last Name</label>
                     <input type="text" name="patient_last_name" id="patient_last_name" required
-                    default="{{ user.last_name }}">
+                    value="{{ form.last_name.value|default_if_none:'' }}">
                 </div>
                 <div class="patient">
                     <label for="patient_date_of_birth">Patient Date of Birth</label>
                     <input type="date" name="patient_date_of_birth" id="patient_date_of_birth" required
-                    default="{{ user.profile.dob }}">
+                    value="{{ form.date_of_birth.value|default_if_none:'' }}">
                 </div>
             </div>
             <div class="drag-zone">

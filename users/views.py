@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth import views as auth_views
+from django.contrib.auth.views import PasswordResetConfirmView
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, RequestDemoForm
@@ -11,6 +12,11 @@ from django.core.mail import EmailMessage
 from django.conf import settings
 import os
 
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_decode
+from django.utils.encoding import force_bytes
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 # home view
 def home_view(request):
@@ -23,8 +29,12 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            Radiologist.objects.create(user=user)
-            messages.success(request, 'Account created successfully. Please login.')
+            username = form.cleaned_data.get('username')
+            messages.success(request, f'Account created for {username}. Please login.')
+
+            if not Radiologist.objects.filter(user=user).exists():
+                Radiologist.objects.create(user=user)
+            
             if image_id:
                 return HttpResponseRedirect(reverse('upload_mammogram', f'?image_id={image_id}'))
             else:
@@ -35,7 +45,7 @@ def register_view(request):
                     messages.error(request, f"{field}: {error}")
     else:
         form = RegisterForm()
-    return render(request, 'users/register.html', {'form': form})
+    return render(request, 'users/register.html', {'form': form, 'image_id': image_id})
 
 # login view
 class CustomLoginView(auth_views.LoginView):
@@ -45,6 +55,27 @@ class CustomLoginView(auth_views.LoginView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password.')
         return super().form_invalid(form)
+    
+User = get_user_model()
+
+def debug_password_reset_confirm(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()  # Decode user ID
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return HttpResponse("Invalid user or UID")
+
+    # Check if the token is valid
+    if default_token_generator.check_token(user, token):
+        return HttpResponse(f"Token is VALID for user: {user.username}")
+    else:
+        return HttpResponse("Invalid or expired token")
+
+class DebugPasswordResetConfirmView(PasswordResetConfirmView):
+    def dispatch(self, request, *args, **kwargs):
+        print(f"DEBUG: Received UID: {kwargs.get('uidb64')}, Token: {kwargs.get('token')}")
+        return super().dispatch(request, *args, **kwargs)
+
 
 # demo view
 def request_demo_view(request):
