@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib import messages
 from django.db.models import Count
 from django.utils.timezone import now, timedelta
 from django.utils import timezone
@@ -98,6 +99,7 @@ def results_view(request, mammogram_id):
         if 'approve' in request.POST:
             mammogram.approved = True
             mammogram.save()
+            messages.success(request, 'Diagnosis approved successfully.')
             return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
         else:
             form = DisapproveForm(request.POST)
@@ -117,8 +119,8 @@ def results_view(request, mammogram_id):
 
                 mammogram.approved = False
                 mammogram.save()
-
-                return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
+                messages.success(request, 'Diagnosis disapproved successfully.')
+                return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
     else:
         form = DisapproveForm(initial={
             'pathology_predicted': mammogram.model_diagnosis,
@@ -207,7 +209,7 @@ def generate_report_view(request, mammogram_id):
     patient_info_data = [
         ["FIRST NAME:", patient.first_name],
         ["LAST NAME:", patient.last_name],
-        ["AGE:", str(patient.age)]
+        ["AGE:", str(patient.age())]
     ]
     patient_info_table = Table(patient_info_data, colWidths=[150, 300])
     patient_info_table.setStyle(TableStyle([

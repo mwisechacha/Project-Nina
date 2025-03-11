@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     {% load static %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/exceptional_report.css' %}">
     <title>Exceptional Reports</title>
 </head>
 <body>
@@ -27,6 +28,7 @@
             <tr>
                 <th>Patient</th>
                 <th>Patient Age</th>
+                <th>Radiologist</th>
                 <th>Model Diagnosis</th>
                 <th>Actual Diagnosis</th>
                 <th>Model Descriptive Diagnosis</th>
@@ -38,8 +40,8 @@
             </tr>
             {% for disapproved in disapproved_mammograms %}
             <tr>
-                <td>{{ disapproved.patient.first_name }} {{ disapproved.patient.last_name }}</td>
-                <td>{{ disapproved.patient.age }}</td>
+                <td>{{ disapproved.mammogram.patient.first_name }} {{ disapproved.mammogram.patient.last_name }}</td>
+                <td>{{ disapproved.mammogram.patient.age }}</td>
                 <td>{{ disapproved.mammogram.radiologist.user.first_name }} {{ disapproved.mammogram.radiologist.user.last_name }}</td>
                 <td>{{ disapproved.mammogram.model_diagnosis }}</td>
                 <td>{{ disapproved.pathology_actual }}</td>

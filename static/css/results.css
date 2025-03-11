@@ -67,7 +67,7 @@ a{
     justify-content: space-between;
     padding: 20px;
     background-color: #FFEEF0;
-    height: min(80vh, 800px);
+    min-height: min(80vh, 800px);
 }
 
 .left-side{
@@ -203,6 +203,7 @@ p.prob-show{
   width: 100%;
   height: 100%;
   object-fit: cover;
+  max-height: 800px;
 }
 
 .details{
@@ -366,23 +367,39 @@ footer {
 .modal-form-group label{
     display: block;
     font-family: 'Poppins', sans-serif;
-    font-size: 1.25rem;
+    font-size: 1.05rem;
+    font-weight: 500;
     margin-bottom: 10px;
 
 }
 
-.modal-form-group input{
+.modal-form-group select{
+    background: transparent;
     padding: 10px;
     margin-bottom: 20px;
     border-radius: 10px;
     border: 1px solid #ccc;
 }
 
-.modal-form-group select{
+select{
+    padding: 0.7rem;
+    font-size: 1rem;
     width: 100%;
-    padding: 10px;
-    box-sizing: border-box;
+    appearance: none;
+    background: url('../images/drop-down-icon.webp') no-repeat right 0.7rem center;
+    background-size: 1rem;
     border: 1px solid #ccc;
+    box-sizing: border-box;
+    
+}
+
+select::-ms-expand{
+    display: none;
+}
+
+select:focus{
+    border-color: #ffccdd;
+    outline: none;
 }
 
 .modal-form-group h3{
@@ -408,6 +425,7 @@ footer {
 }
 
 .comment-section textarea{
+    background: transparent;
     height: 168px;
     width: 564px;
     padding: 8px;
@@ -422,10 +440,13 @@ footer {
 }
 
 .submit-button{
-    padding: 10px 20px;
-    background-color: #FF4C6A;
-    color: white;
+    width: 30%;
+    padding: 10px 15px;
     border: none;
+    margin-top: 36px;
+    /* margin-bottom: 36px; */
+    background-color: #FF4C6A;
+    color: #FFFFFF;
+    font-size: 16px;
     cursor: pointer;
-    margin-top: 20px;
 }
