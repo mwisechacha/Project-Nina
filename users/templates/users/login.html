@@ -38,13 +38,6 @@
             
                 <button class="login-btn">Sign In</button>
             </form>
-            {% if messages %}
-                <div class="error-messages">
-                    {% for message in messages %}
-                        <p class="error">{{message}}</p>
-                    {% endfor %}
-                </div>
-            {% endif %}
             <div class="footer-text">
                 <p>Don't have an account? <a href="{% url 'register' %}">Register</a></p>
             </div>

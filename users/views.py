@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import views as auth_views
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, RequestDemoForm
@@ -35,6 +36,15 @@ def register_view(request):
     else:
         form = RegisterForm()
     return render(request, 'users/register.html', {'form': form})
+
+# login view
+class CustomLoginView(auth_views.LoginView):
+    template_name = 'users/login.html'
+    redirect_authenticated_user = True
+
+    def form_invalid(self, form):
+        messages.error(self.request, 'Invalid username or password.')
+        return super().form_invalid(form)
 
 # demo view
 def request_demo_view(request):
