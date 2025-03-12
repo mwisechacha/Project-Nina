@@ -1,12 +1,6 @@
 from django.urls import path
 from django.contrib.auth import views as auth_views
-from django.contrib.auth.views import PasswordResetConfirmView
-from .views import register_view, home_view, request_demo_view, CustomLoginView, debug_password_reset_confirm
-
-class DebugPasswordResetConfirmView(PasswordResetConfirmView):
-    def dispatch(self, request, *args, **kwargs):
-        print(f"DEBUG: password_reset_confirm called with UID: {kwargs.get('uidb64')}, Token: {kwargs.get('token')}")
-        return super().dispatch(request, *args, **kwargs)
+from .views import register_view, home_view, request_demo_view, CustomLoginView
 
 urlpatterns = [
     path('register/', register_view, name='register'),
@@ -26,7 +20,6 @@ urlpatterns = [
     path('password-reset-complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='users/password_reset_complete.html'
     ), name='password_reset_complete'),
-    path('debug-password-reset-confirm/<uidb64>/<token>/', debug_password_reset_confirm),
     path('request-demo/', request_demo_view, name='request_demo'),
     path('', home_view, name='home'),
 ]

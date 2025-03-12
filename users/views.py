@@ -55,27 +55,6 @@ class CustomLoginView(auth_views.LoginView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password.')
         return super().form_invalid(form)
-    
-User = get_user_model()
-
-def debug_password_reset_confirm(request, uidb64, token):
-    try:
-        uid = urlsafe_base64_decode(uidb64).decode()  # Decode user ID
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        return HttpResponse("Invalid user or UID")
-
-    # Check if the token is valid
-    if default_token_generator.check_token(user, token):
-        return HttpResponse(f"Token is VALID for user: {user.username}")
-    else:
-        return HttpResponse("Invalid or expired token")
-
-class DebugPasswordResetConfirmView(PasswordResetConfirmView):
-    def dispatch(self, request, *args, **kwargs):
-        print(f"DEBUG: Received UID: {kwargs.get('uidb64')}, Token: {kwargs.get('token')}")
-        return super().dispatch(request, *args, **kwargs)
-
 
 # demo view
 def request_demo_view(request):

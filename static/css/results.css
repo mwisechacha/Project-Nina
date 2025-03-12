@@ -314,6 +314,12 @@ footer {
     margin-top: 20px;
 }
 
+footer p{
+    font-family: 'Poppins', sans-serif;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
 .modal{
     display: none;
     position: fixed;

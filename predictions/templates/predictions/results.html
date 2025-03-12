@@ -50,23 +50,17 @@
                         <table>
                             <thead>
                                 <tr>
-                                    <th></th>
-                                    <th>Benign</th>
-                                    <th>Malignant</th>
-                                    <th>Total</th>
+                                    <th>Model Name</th>
+                                    <th>Accuracy</th>
                                 </tr>
-                                <tr>
-                                    <td>Image Count</td>
-                                    <td>{{benign_count}}</td>
-                                    <td>{{malignant_count}}</td>
-                                    <td>{{total_count}}</td>
-                                </tr>
-                                <tr>
-                                    <td>Mass Description Count</td>
-                                    <td>{{benign_count}}</td>
-                                    <td>{{malignant_count}}</td>
-                                    <td>{{total_count}}</td>
-                                </tr>
+                                {% for metric in metrics %}
+                                {% if metric.target == 1 %}
+                                    <tr>
+                                        <td>{{ metric.model_name }}</td>
+                                        <td>{{metric.accuracy}}</td>
+                                    </tr>
+                                {% endif %}
+                                {% endfor %}
                             </thead>
                         </table>
 
@@ -82,14 +76,16 @@
                                     <th>F1 Score</th>
                                 </tr>
                                 {% for metric in metrics %}
-                                <tr class="{% if metric.target == 1%}no-border-top{% endif %} {% if metric.target == 0 %}no-border-bottom{% endif %}">
-                                    <td>{% if metric.target == 1 %} {% else %}{{ metric.model_name }}{% endif %}</td>
-                                    <td>{{ metric.target}}</td>
+                                {% with prev_metric=metrics|slice:forloop.counter0|last %}
+                                <tr class="{% if forloop.first or prev_metric.model_name != metric.model_name %}border-top{% endif %}">
+                                    <td>{% if forloop.first or prev_metric.model_name != metric.model_name %}{{ metric.model_name }}{% endif %}</td>
+                                    <td>{{ metric.target }}</td>
                                     <td>{{ metric.precision }}</td>
                                     <td>{{ metric.recall }}</td>
                                     <td>{{ metric.f1_score }}</td>
                                 </tr>
-                                {% endfor %} 
+                                {% endwith %}
+                            {% endfor %}
                             </tbody>
                         </table>
                     </section>
@@ -212,6 +208,7 @@
 
     <footer style="margin: 0;">
         <h1>Advanced Analytics</h1>
+        <p>Confusion Matrix for the three models</p>
     </footer>  
     <script type="module">
         var modal = document.getElementById("disapproveModal");
@@ -252,7 +249,7 @@
                 const { labels, matrix } = data[model];
 
                 // container setup
-                const width = 300, height = 300;
+                const width = 400, height = 400;
                 const cellSize = width / 2;
                 const padding = 50;
 
@@ -264,10 +261,11 @@
                     .attr("transform", `translate(${padding / 2}, ${padding / 2})`);
 
                 svg.append("text")
-                    .attr("x", 100)
+                    .attr("x", 10)
                     .attr("y", 20)
                     .attr("font-size", "16px")
                     .attr("font-weight", "bold")
+                    .attr("font-family", "'Poppins', sans-serif")
                     .text(`Confusion Matrix - ${model}`);
 
                 // color scale
@@ -278,18 +276,19 @@
                 // draw matrix
                 matrix.forEach((row, i) => {
                     row.forEach((value, j) => {
+                        const fillColor = i === j ? "#FFEEF0" : colorScale(value);
                         svg.append("rect")
                             .attr("x", j * cellSize)
                             .attr("y", i * cellSize + 50)
                             .attr("width", cellSize)
                             .attr("height", cellSize)
-                            .attr("fill", colorScale(value))
+                            .attr("fill", fillColor)
                             .attr("stroke", "black")
                             .on("mouseover", function() {
                                 d3.select(this).attr("fill", "#FFEEF0");
                             })
                             .on("mouseout", function() {
-                                d3.select(this).attr("fill", colorScale(value));
+                                d3.select(this).attr("fill", fillColor);
                             });
                              
                         // text inside the cell
@@ -310,7 +309,6 @@
                     .attr("y", 250)
                     .attr("font-size", "20px")
                     .attr("font-weight", "bold")
-                    // rotate the text to face north
                     .attr("transform", "rotate(-90, -10, 250)")
                     .text("Predicted");
 
