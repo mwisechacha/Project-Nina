@@ -72,7 +72,7 @@ def activate_account(request, uidb64, token):
         user.save()
         return render(request, 'users/email_verification_success.html', {'user': user})
     else:
-        return render(request, 'users/email_verification_failed.html')
+        return render(request, 'users/email_verification_invalid.html')
     
 def resend_activation_email(request):
     if request.method == 'POST':
@@ -103,7 +103,7 @@ def resend_activation_email(request):
             messages.error(request, 'User with that email does not exist.')
             return redirect('resend_ativation_email')
         
-    return render(request, 'users/resend_activation_email.html')
+    return render(request, 'users/resend_email.html')
 
 
 # login view

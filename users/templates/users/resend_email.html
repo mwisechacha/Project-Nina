@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
     <link rel="stylesheet" href="{% static 'css/login.css' %}">
     <title>Resent Activation Email</title>
 </head>
@@ -13,14 +14,13 @@
                 <img src="{% static 'images/nina-logo.png'%}" alt="logo">
             </div>
             <h1>Resend Activation Email</h1>
-            <p>Enter your email and password to sign in</p>
-            <form action="{% url 'resend_verification' %}" method="POST">
+            <p>Enter your email</p>
+            <form action="{% url 'resend_verification_email' %}" method="POST">
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" placeholder="
-                    Enter your email" required class="{% if form.email.errors %}error{% endif %}" default="{{ form.email.value }}">
-                <button type="submit" class="register-btn">Register</button>
+                    <input type="email" name="email" id="email" required class="{% if form.email.errors %}error{% endif %}" default="{{ form.email.value }}">
+                <button type="submit" class="login-btn">Resend email</button>
             </form>
             {% if messages %}
             {% for message in messages %}
