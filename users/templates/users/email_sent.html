@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <title>Email Verification Sent</title>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-container">
+                <img src="{% static 'images/nina-logo.png'%}" alt="logo">
+            </div>
+            <h1>Email Verification Sent</h1>
+            <p>We have sent an activation link to <strong>{{email}}</strong>. 
+                Please check your inbox and click the link to activate your account</p>
+        </div>
+    </div>
+</body>
+</html>

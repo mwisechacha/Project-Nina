@@ -15,6 +15,7 @@ scikit-learn = "*"
 reportlab = "*"
 opencv-python = "*"
 tzdata = "*"
+django-verify-email = "*"
 
 [dev-packages]
 
