@@ -14,6 +14,7 @@ joblib = "*"
 scikit-learn = "*"
 reportlab = "*"
 opencv-python = "*"
+tzdata = "*"
 
 [dev-packages]
 

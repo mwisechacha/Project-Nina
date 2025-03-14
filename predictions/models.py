@@ -8,6 +8,10 @@ import uuid
 class Radiologist(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+    @property
+    def organization(self):
+        return self.user.organization
+
     def __str__(self):
         return f"Radiologist {self.user.username}"
 
@@ -85,6 +89,8 @@ class WeeklySummary(models.Model):
     total_patients = models.IntegerField(default=0)
     benign_cases = models.IntegerField(default=0)
     malignant_cases = models.IntegerField(default=0)
+    radiologist = models.ForeignKey(Radiologist, on_delete=models.CASCADE, null=True, related_name='weekly_summaries', default=None)
+
 
     def __str__(self):
         return f"Summary for {self.week_start} to {self.week_end}"

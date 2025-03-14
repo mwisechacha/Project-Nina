@@ -1,26 +1,27 @@
-from io import BytesIO
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.urls import reverse
-from django.template.loader import render_to_string
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import now, timedelta, make_aware
 from django.utils import timezone
-from statistics import mean
+from django.urls import reverse
+from datetime import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_RIGHT
+from statistics import mean
 from .forms import MammogramForm, DisapproveForm
 from .models import Mammogram, ModelMetrics, Patient, WeeklySummary, Radiologist, DisapprovedMammogram
 from .predictions import predict, get_mammogram_stats
 from .descriptive_predictions import describe_predict
 from .utils import get_conf_matrix_data
+from io import BytesIO
 import os
 
 def upload_mammogram(request):
@@ -300,13 +301,16 @@ def generate_report_view(request, mammogram_id):
 
     return response
 
-def generate_weekly_summary():
+def generate_weekly_summary(radiologist):
         today = now().date()
         week_start = today - timedelta(days=today.weekday())
         week_end = week_start + timedelta(days=6)
 
+        week_start = make_aware(datetime.combine(week_start, datetime.min.time()))
+        week_end = make_aware(datetime.combine(week_end, datetime.max.time()))
+
         # diagnosis during the week
-        weekly_data = Mammogram.objects.filter(uploaded_at__range=[week_start, week_end])
+        weekly_data = Mammogram.objects.filter(uploaded_at__range=[week_start, week_end], radiologist=radiologist, approved=True)
         
         # benign and malignant count
         benign_cases = weekly_data.filter(model_diagnosis='Benign').count()
@@ -328,7 +332,7 @@ def generate_weekly_summary():
         # previous week data
         previous_week_start = week_start - timedelta(days=7)
         previous_week_end = week_end - timedelta(days=7)
-        previous_week_data = Mammogram.objects.filter(uploaded_at__range=[previous_week_start, previous_week_end])
+        previous_week_data = Mammogram.objects.filter(uploaded_at__range=[previous_week_start, previous_week_end], radiologist=radiologist, approved=True)
         previous_week_summary = {
             'benign_cases': previous_week_data.filter(model_diagnosis='Benign').count(),
             'malignant_cases': previous_week_data.filter(model_diagnosis='Malignant').count(),
@@ -352,8 +356,8 @@ def generate_weekly_summary():
         breast_density_distribution = weekly_data.values('breast_density').annotate(count=Count('breast_density'))
 
         # store summary
-        summary, created = WeeklySummary.objects.get_or_create(
-            week_start=week_start, week_end=week_end,
+        summary, created = WeeklySummary.objects.update_or_create(
+            week_start=week_start, week_end=week_end, radiologist=radiologist,
             defaults={
                 'total_patients': total_patients, 
                 'benign_cases': benign_cases, 
@@ -362,21 +366,41 @@ def generate_weekly_summary():
         )
 
         return summary, daily_breakdown, previous_week_summary, average_age, breast_density_distribution
-
+@login_required
 def weekly_summary_view(request):
-    weekly_summary, daily_breakdown, previous_week, average_age, breast_density_distribution = generate_weekly_summary()
-    context = {
-        'weekly_summary': weekly_summary,
-        'total_patients': weekly_summary.total_patients,
-        'benign_cases': weekly_summary.benign_cases,
-        'malignant_cases': weekly_summary.malignant_cases,
-        'start_week': weekly_summary.week_start,
-        'end_week': weekly_summary.week_end,
-        'daily_breakdown': daily_breakdown,
-        'previous_week': previous_week,
-        'average_age': average_age,
-        'breast_density_distribution': breast_density_distribution
-    }
+    try:
+        radiologist = Radiologist.objects.get(user=request.user)
+    except Radiologist.DoesNotExist:
+        radiologist = None
+
+    if radiologist:
+        weekly_summary, daily_breakdown, previous_week, average_age, breast_density_distribution = generate_weekly_summary(radiologist)
+        context = {
+            'weekly_summary': weekly_summary,
+            'total_patients': weekly_summary.total_patients,
+            'benign_cases': weekly_summary.benign_cases,
+            'malignant_cases': weekly_summary.malignant_cases,
+            'start_week': weekly_summary.week_start,
+            'end_week': weekly_summary.week_end,
+            'daily_breakdown': daily_breakdown,
+            'previous_week': previous_week,
+            'average_age': average_age,
+            'breast_density_distribution': breast_density_distribution
+        }
+    else:
+        context = {
+            'weekly_summary': None,
+            'total_patients': 0,
+            'benign_cases': 0,
+            'malignant_cases': 0,
+            'start_week': None,
+            'end_week': None,
+            'daily_breakdown': [],
+            'previous_week': {},
+            'average_age': None,
+            'breast_density_distribution': []
+        }
+
     return render(request, 'predictions/weekly_summary.html', context)
 
 def weekly_summary_report(request):
@@ -435,9 +459,18 @@ def weekly_summary_report(request):
     footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
     elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-
+@login_required
 def detailed_reports_view(request):
-    detailed_data = Mammogram.objects.select_related("patient", "radiologist").order_by('-uploaded_at')
+    try:
+        radiologist = Radiologist.objects.get(user=request.user)
+    except Radiologist.DoesNotExist:
+        radiologist = None
+
+    if radiologist:
+        detailed_data = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
+    else:
+        detailed_data = Mammogram.objects.none()
+
     return render(request, 'predictions/detailed_report.html', {'detailed_data': detailed_data})
 
 def generate_detailed_report(request):
@@ -520,12 +553,55 @@ def generate_detailed_report(request):
 
     return response
 
+@login_required
 def exceptional_reports_view(request):
-    disapproved_mammograms = DisapprovedMammogram.objects.select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
+    try:
+        radiologist = Radiologist.objects.get(user=request.user)
+    except Radiologist.DoesNotExist:
+        radiologist = None
+
+    if radiologist:
+        disapproved_mammograms = DisapprovedMammogram.objects.filter(mammogram__radiologist=radiologist).select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
+    else:
+        disapproved_mammograms = DisapprovedMammogram.objects.none()
+
     return render(request, 'predictions/exceptional_reports.html', {'disapproved_mammograms': disapproved_mammograms})
 
 def reports_view(request):
-    weekly_summary = generate_weekly_summary()
-    detailed_report = generate_detailed_report(request)
-    return render(request, 'predictions/reports.html', {'weekly_summary': weekly_summary,
-                                                        'detailed_report': detailed_report})
+    try:
+        radiologist = Radiologist.objects.get(user=request.user)
+    except Radiologist.DoesNotExist:
+        radiologist = None
+
+    if radiologist:
+        weekly_summary, daily_breakdown, previous_week, average_age, breast_density_distribution = generate_weekly_summary(radiologist)
+        detailed_data = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
+        context = {
+            'weekly_summary': weekly_summary,
+            'total_patients': weekly_summary.total_patients,
+            'benign_cases': weekly_summary.benign_cases,
+            'malignant_cases': weekly_summary.malignant_cases,
+            'start_week': weekly_summary.week_start,
+            'end_week': weekly_summary.week_end,
+            'daily_breakdown': daily_breakdown,
+            'previous_week': previous_week,
+            'average_age': average_age,
+            'breast_density_distribution': breast_density_distribution,
+            'detailed_data': detailed_data
+        }
+    else:
+        context = {
+            'weekly_summary': None,
+            'total_patients': 0,
+            'benign_cases': 0,
+            'malignant_cases': 0,
+            'start_week': None,
+            'end_week': None,
+            'daily_breakdown': [],
+            'previous_week': {},
+            'average_age': None,
+            'breast_density_distribution': [],
+            'detailed_data': []
+        }
+
+    return render(request, 'predictions/reports.html', context)
