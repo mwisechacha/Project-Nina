@@ -33,6 +33,7 @@
         <h3 style="text-align: center;">Report showing each mammogram analysis, including patient information, the radiologist, diagnosis, mass attributes and the BIRADS Assessment</h3>
         <table>
             <tr>
+                <th>PatientID</th>
                 <th>Patient Name</th>
                 <th>Age</th>
                 <th>Mass Shape</th>
@@ -45,6 +46,7 @@
             </tr>
             {% for data in detailed_data %}
             <tr>
+                <td>{{ data.patient.patient_id }}</td>
                 <td>{{ data.patient.first_name }} {{ data.patient.last_name}}</td>
                 <td>{{ data.patient.age }}</td>
                 <td>{{ data.mass_shape|lower }}</td>

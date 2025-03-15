@@ -17,12 +17,18 @@ class Radiologist(models.Model):
 
 
 class Patient(models.Model):
+    patient_id = models.CharField(max_length=20, unique=True, blank=True, null=False)
     first_name = models.CharField(max_length=100, null=True, blank=True)
     last_name = models.CharField(max_length=100, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        if not self.patient_id:  
+            self.patient_id = f"nina_{uuid.uuid4().hex[:8]}" 
+        super().save(*args, **kwargs)  # Save the patient
+
     def __str__(self):
-        return f"Patient {self.first_name} {self.last_name} born on {self.date_of_birth}"
+        return f"Patient {self.patient_id} ({self.first_name} {self.last_name})"
     
     def age(self):
         if self.date_of_birth:

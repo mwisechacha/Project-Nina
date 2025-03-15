@@ -4,8 +4,8 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db.models import Count
-from django.utils.timezone import now, timedelta, make_aware
+from django.db.models import Count, Q
+from django.utils.timezone import now, timedelta, make_aware, localtime
 from django.utils import timezone
 from django.urls import reverse
 from datetime import datetime
@@ -26,39 +26,57 @@ import os
 
 def upload_mammogram(request):
     image_id = request.GET.get('image_id')
+
+    # search for patient
+    search_query = request.GET.get('search', '')
+
+    patient = []
+    if search_query:
+        patients = Patient.objects.filter(
+            Q(first_name__icontains=search_query) | 
+            Q(last_name__icontains=search_query) |
+            Q(date_of_birth__icontains=search_query)
+        )
+
+
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
-        if mammogram_form.is_valid():
+        selected_patient_id = request.POST.get('selected_patient_id')
+
+        if selected_patient_id:
+            patient = Patient.objects.get(id=selected_patient_id)
+        else:
             first_name = request.POST.get('patient_first_name')
             last_name = request.POST.get('patient_last_name')
             date_of_birth = request.POST.get('patient_date_of_birth')
             patient, created = Patient.objects.get_or_create(
-                first_name=first_name, last_name=last_name,
-                date_of_birth=date_of_birth
+                first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
             )
-            try:
-                radiologist = Radiologist.objects.get(user=request.user)
-            except ObjectDoesNotExist:
-                radiologist = Radiologist.objects.create(user=request.user)  
+
+        try:
+            radiologist = Radiologist.objects.get(user=request.user)
+        except ObjectDoesNotExist:
+            radiologist = Radiologist.objects.create(user=request.user)
+
+        if mammogram_form.is_valid():  
             mammogram = mammogram_form.save(commit=False)
             mammogram.patient = patient
             mammogram.radiologist = radiologist
             mammogram.uploaded_at = timezone.now()
             mammogram.save()
-            print(mammogram.patient)
+            
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
+        
         else:
             print(mammogram_form.errors)
+    if image_id:
+        image_path = os.path.join(settings.MEDIA_ROOT, 'images', f'images/mammograms/{image_id}.jpg')
+        if os.path.exists(image_path):
+            with open(image_path, 'rb') as f:
+                mammogram_form = MammogramForm({'image': f})
+        mammogram_form = MammogramForm()
     else:
-        if image_id:
-            image_path = os.path.join(settings.MEDIA_ROOT, 'images', f'images/mammograms/{image_id}.jpg')
-            if os.path.exists(image_path):
-                with open(image_path, 'rb') as f:
-                    mammogram_form = MammogramForm({'image': f})
-            else:
-                mammogram_form = MammogramForm()
-        else:
-            mammogram_form = MammogramForm()
+        mammogram_form = MammogramForm()
     return render(request, 'predictions/upload_image.html', {'mammogram_form': mammogram_form})
 
 def processing_view(request, mammogram_id):
@@ -309,30 +327,43 @@ def generate_weekly_summary(radiologist):
         week_start = make_aware(datetime.combine(week_start, datetime.min.time()))
         week_end = make_aware(datetime.combine(week_end, datetime.max.time()))
 
-        # diagnosis during the week
-        weekly_data = Mammogram.objects.filter(uploaded_at__range=[week_start, week_end], radiologist=radiologist, approved=True)
-        
-        # benign and malignant count
+        week_start_local = localtime(week_start)
+        week_end_local = localtime(week_end)
+
+        # Diagnosis during the week
+        weekly_data = Mammogram.objects.filter(
+            uploaded_at__range=[week_start_local, week_end_local],
+            radiologist=radiologist
+        )
+
+        # Benign and malignant count
         benign_cases = weekly_data.filter(model_diagnosis='Benign').count()
         malignant_cases = weekly_data.filter(model_diagnosis='Malignant').count()
         total_patients = weekly_data.count()
 
-        # daily breakdown
+        # Daily breakdown
         daily_breakdown = []
         for i in range(7):
             day = week_start + timedelta(days=i)
-            day_data = weekly_data.filter(uploaded_at__date=day)
+            day_start = localtime(day).replace(hour=0, minute=0, second=0)
+            day_end = localtime(day).replace(hour=23, minute=59, second=59)
+            day_data = weekly_data.filter(uploaded_at__range=[day_start, day_end])
+            
+            benign_count = day_data.filter(model_diagnosis='Benign').count()
+            malignant_count = day_data.filter(model_diagnosis='Malignant').count()
+            total_count = day_data.count()
+
             daily_breakdown.append({
-                'day': day,
-                'benign_cases': day_data.filter(model_diagnosis='Benign').count(),
-                'malignant_cases': day_data.filter(model_diagnosis='Malignant').count(),
-                'total_patients': day_data.count()
+                'day': day.date(),
+                'benign_cases': benign_count,
+                'malignant_cases': malignant_count,
+                'total_patients': total_count
             })
 
         # previous week data
         previous_week_start = week_start - timedelta(days=7)
         previous_week_end = week_end - timedelta(days=7)
-        previous_week_data = Mammogram.objects.filter(uploaded_at__range=[previous_week_start, previous_week_end], radiologist=radiologist, approved=True)
+        previous_week_data = Mammogram.objects.filter(uploaded_at__range=[previous_week_start, previous_week_end], radiologist=radiologist)
         previous_week_summary = {
             'benign_cases': previous_week_data.filter(model_diagnosis='Benign').count(),
             'malignant_cases': previous_week_data.filter(model_diagnosis='Malignant').count(),
@@ -353,6 +384,7 @@ def generate_weekly_summary(radiologist):
                 ages.append(age)
 
         average_age = mean(ages) if ages else None
+        average_age = round(average_age, 2) if average_age else None
         breast_density_distribution = weekly_data.values('breast_density').annotate(count=Count('breast_density'))
 
         # store summary
@@ -366,6 +398,7 @@ def generate_weekly_summary(radiologist):
         )
 
         return summary, daily_breakdown, previous_week_summary, average_age, breast_density_distribution
+
 @login_required
 def weekly_summary_view(request):
     try:
