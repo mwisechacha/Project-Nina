@@ -12,6 +12,9 @@ urlpatterns = [
     path('diagnosis_report/<uuid:mammogram_id>/', views.generate_report_view, name='generate_report'),
     path('reports/', views.reports_view, name='reports'),
     path('reports/weekly/', views.weekly_summary_view, name='weekly_summary'),
+    path('weekly_summary_report/', views.weekly_summary_report, name='weekly_summary_report'),
     path('reports/detail_report/', views.detailed_reports_view, name='detailed_reports'),
+    path('generate_detailed_report/', views.generate_detailed_report, name='generate_detailed_report'),
     path('reports/exceptional_report/', views.exceptional_reports_view, name='exceptional_reports'),
+    path('generate_exceptional_report/', views.generate_exceptional_report, name='generate_exceptional_report'),
 ]

@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="btn btn-download">
-            <a href="#">Download Report</a>
+            <a href="{% url 'generate_exceptional_report' %}">Download Report</a>
         </div>
     </div>
     <div class="exce-body">
@@ -35,6 +35,7 @@
             of the breast cancer detection system.</h3>
         <table>
             <tr>
+                <th>ID</th>
                 <th>Patient</th>
                 <th>Patient Age</th>
                 <th>Radiologist</th>
@@ -49,6 +50,7 @@
             </tr>
             {% for disapproved in disapproved_mammograms %}
             <tr>
+                <td>{{ disapproved.mammogram.patient.patient_id }}</td>
                 <td>{{ disapproved.mammogram.patient.first_name }} {{ disapproved.mammogram.patient.last_name }}</td>
                 <td>{{ disapproved.mammogram.patient.age }}</td>
                 <td>{{ disapproved.mammogram.radiologist.user.first_name }} {{ disapproved.mammogram.radiologist.user.last_name }}</td>

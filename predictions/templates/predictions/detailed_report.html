@@ -24,7 +24,7 @@
             </div>
         </div>
         <div class="btn btn-download">
-            <a href="#">Download Report</a>
+            <a href="{% url 'generate_detailed_report' %}">Download Report</a>
         </div>
        </div>
 
@@ -43,6 +43,7 @@
                 <th>Diagnosis</th>
                 <th>Probability of Cancer</th>
                 <th>Radiologist</th>
+                <th>Approved</th>
             </tr>
             {% for data in detailed_data %}
             <tr>
@@ -56,6 +57,7 @@
                 <td>{{ data.birads_assessment }}</td>
                 <td>{{ data.probability_of_cancer}}%</td>
                 <td>{{ data.radiologist.user.first_name }} {{data.radiologist.user.last_name}}</td>
+                <td>{{data.approved}}</td>
             </tr>
             {% endfor %}
         </table>
