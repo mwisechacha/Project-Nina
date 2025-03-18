@@ -9,10 +9,6 @@ from PIL import Image
 from django.db.models import  Count, Q
 from .models import GroundTruth
 
-# def preprocess_ploaded_image(image_path):
-#     image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
-#     image = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
-
 def load_model():
     weights = ResNet18_Weights.IMAGENET1K_V1
     model = models.resnet18(weights=weights)
