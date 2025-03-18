@@ -19,12 +19,21 @@ BREAST_DENSITY_MAPPING = {
 
 MODEL_2 = joblib.load(os.path.join(os.path.dirname(__file__), 'model', 'BIRADS_model.pkl'))
 PIPELINE_2 = joblib.load(os.path.join(os.path.dirname(__file__), 'pipeline', 'binary_pipeline_2.pkl'))
-LABELS_2 = {0: 'Need additional imaging',
+LABELS_2 = {0: 'Incomplete',
             1: 'Negative',
             2: 'Benign',
             3: 'Probably benign',
-            4: 'Suspicious',
+            4: 'Suspicious of malignacy',
             5: 'Highly suggestive of malignancy'}
+
+RECOMMENDATIONS = {
+    0: 'Need additional imaging to further evaluate',
+    1: 'Continue routine annual screening',
+    2: 'Continure routine annual screening',
+    3: 'Short term follow-up is suggested (6 months)',
+    4: 'Biopsy should be considered',
+    5: 'Biopsy is required'
+}
 
 
 def describe_predict(mass_margin, mass_shape, breast_density):
@@ -70,6 +79,7 @@ def describe_predict(mass_margin, mass_shape, breast_density):
         predicted_class = int(prediction_2[0])
         prediction_label_2 = LABELS_2[predicted_class]
 
+
         print(f"Model 2 prediction: {prediction_label_2}")
 
         probability_mapping = {
@@ -82,8 +92,9 @@ def describe_predict(mass_margin, mass_shape, breast_density):
         }
 
         probability_of_cancer = probability_mapping[predicted_class]
+        recommendation = RECOMMENDATIONS[predicted_class]
 
     except Exception as e:
         raise RuntimeError(f"Model 2 prediction failed: {e}")
 
-    return prediction_label, prediction_label_2, probability_of_cancer
+    return prediction_label, prediction_label_2, probability_of_cancer, recommendation

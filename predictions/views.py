@@ -195,6 +195,9 @@ def generate_report_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
     patient = mammogram.patient
 
+    # get recommendation
+    _, _, _, recommendation = describe_predict(mammogram.mass_margin, mammogram.mass_shape, mammogram.breast_density)
+
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{patient.first_name}{patient.last_name}_diagnosis report_{mammogram_id}.pdf"'
 
@@ -285,7 +288,7 @@ def generate_report_view(request, mammogram_id):
     <b>{mammogram.descriptive_diagnosis}</b>. The patient has a breast density of 
     <b>{mammogram.breast_density}</b>.
     """, styles["CustomBodyText"]))
-    elements.append(Spacer(1, 10))
+    elements.append(Spacer(1, 30))
 
     # BIRADS assessment
     elements.append(Paragraph("BIRADS Assessment", styles["SubHeading"]))
@@ -298,10 +301,7 @@ def generate_report_view(request, mammogram_id):
 
     # recommendation
     elements.append(Paragraph("Recommendations", styles["SubHeading"]))
-    elements.append(Paragraph("""
-    If the model's predictions align with the radiologist's assessment, 
-    further consultation with a healthcare provider is recommended.
-    """, styles["CustomBodyText"]))
+    elements.append(Paragraph(recommendation, styles["CustomBodyText"]))
     elements.append(Spacer(1, 20))
 
     footer_logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
