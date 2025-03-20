@@ -30,7 +30,7 @@
 
        <div class="detailed-body">
         <h1 style="text-align: center;"><u>Diagnosis Report for the period between {{ start_date|date:"Y-m-d" }} and {{ end_date|date:"Y-m-d" }}</u></h1>
-        <h3 style="text-align: center;">Report showing each mammogram analysis, including patient information, the radiologist, diagnosis, mass attributes and the BIRADS Assessment</h3>
+        <h3 style="text-align: center;">Report showing each mammogram analysis, including patient information, the radiologist, diagnosis, mass attributes and the BI-RADS Assessment</h3>
         <table>
             <tr>
                 <th>S/N</th>
@@ -58,7 +58,7 @@
                 <td>{{ data.birads_assessment }}</td>
                 <td>{{ data.probability_of_cancer}}%</td>
                 <td>{{ data.radiologist.user.first_name }} {{data.radiologist.user.last_name}}</td>
-                <td>{{data.approved}}</td>
+                <td>{{ data.approved }}</td>
                 <td>{{ data.uploaded_at }}</td>
             </tr>
             {% endfor %}

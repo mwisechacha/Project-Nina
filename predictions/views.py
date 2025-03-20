@@ -600,7 +600,7 @@ def generate_detailed_report(request):
         doc = SimpleDocTemplate(buffer, pagesize=letter)
 
         styles = getSampleStyleSheet()
-        styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, spaceAfter=10, alignment=1, fontName="Helvetica-Bold"))
+        styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, alignment=1, fontName="Helvetica-Bold"))
         styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold", underlineWidth=1, alignment=0))
         styles.add(ParagraphStyle(name="CustomBodyText", fontSize=12, leading=16, spaceAfter=10))
         styles.add(ParagraphStyle(name="TableHeader", fontSize=12, textColor=colors.white, backColor=HexColor("#FFEEF0"), alignment=1))
@@ -617,14 +617,14 @@ def generate_detailed_report(request):
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
         
-        elements.append(Paragraph(f"Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})", styles['CenteredHeading']))
+        elements.append(Paragraph(f"""Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})""", styles['Title']))
         elements.append(Spacer(1, 20))
 
         # fetch data
         mammograms = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
 
         data = [
-            ["S/N", "Patient Name", "Age", "Radiologist", "UploadedAt", "ModelDiagnosis", "Descriptive", "BIRADS", "PB", "Approved"]
+            ["S/N", "PName", "Age", "Radiologist", "UploadedAt", "MD", "Descr", "BI-RADS", "PB", "APR"]
         ]
 
         for index, entry in enumerate(mammograms, start=1):
@@ -635,14 +635,14 @@ def generate_detailed_report(request):
                 Paragraph(str(entry.patient.age() or "N/A"), styles["CustomBodyText"]),
                 Paragraph(radiologist_name, styles["CustomBodyText"]),
                 Paragraph(entry.uploaded_at.strftime("%Y-%m-%d") if entry.uploaded_at else "N/A", styles["CustomBodyText"]),
-                Paragraph(entry.model_diagnosis or "N/A", styles["CustomBodyText"]),
-                Paragraph(entry.descriptive_diagnosis or "N/A", styles["CustomBodyText"]),
+                Paragraph(entry.model_diagnosis.lower() or "N/A", styles["CustomBodyText"]),
+                Paragraph(entry.descriptive_diagnosis.lower() or "N/A", styles["CustomBodyText"]),
                 Paragraph(entry.birads_assessment or "N/A", styles["CustomBodyText"]),
                 Paragraph(f"{entry.probability_of_cancer}%" if entry.probability_of_cancer is not None else "N/A", styles["CustomBodyText"]),
                 Paragraph("Yes" if entry.approved else "No", styles["CustomBodyText"])
             ])
             
-        table = Table(data, colWidths=[80, 30, 80, 80, 80, 80, 80, 50]) 
+        table = Table(data, colWidths=[30, 80, 40, 80, 80, 70, 65, 90, 40, 40]) 
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
@@ -742,12 +742,12 @@ def generate_exceptional_report(request):
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
         
-        elements.append(Paragraph(f"Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})", styles['CenteredHeading']))
+        elements.append(Paragraph(f"Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})", styles['Title']))
         elements.append(Spacer(1, 20))
 
         # fetch data
         data = [
-            ["S/N", "PatientName", "Age", "Radiologist", "ActualDiagnosis", "ActualDescriptive", "ActualBIRADS", "Uploaded At"]
+            ["S/N", "PatientName", "Age", "Radiologist", "ActualDiagnosis", "ActualDescr", "ActualBIRADS", "UploadedAt"]
         ]
 
         for index, entry in enumerate(disapproved_mammograms, start=1):
@@ -763,17 +763,17 @@ def generate_exceptional_report(request):
                 Paragraph(entry.mammogram.uploaded_at.strftime("%Y-%m-%d"), styles["CustomBodyText"])
             ])
 
-        table = Table(data, colWidths=[80, 85, 35, 80, 85, 95, 80, 80])  # Adjusted column widths
+        table = Table(data, colWidths=[40, 85, 35, 80, 85, 90, 80, 80])  
         table.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
-            ('FONTSIZE', (0, 0), (-1, -1), 10),  # Adjusted font size
+            ('FONTSIZE', (0, 0), (-1, -1), 10), 
             ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
             ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP')  # Ensure text is aligned to the top
+            ('VALIGN', (0, 0), (-1, -1), 'TOP') 
         ]))
 
         elements.append(table)
