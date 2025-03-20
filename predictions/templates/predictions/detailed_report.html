@@ -29,11 +29,11 @@
        </div>
 
        <div class="detailed-body">
-        <h1 style="text-align: center;"><u>Detailed Diagnosis Report</u></h1>
+        <h1 style="text-align: center;"><u>Diagnosis Report for the period between {{ start_date|date:"Y-m-d" }} and {{ end_date|date:"Y-m-d" }}</u></h1>
         <h3 style="text-align: center;">Report showing each mammogram analysis, including patient information, the radiologist, diagnosis, mass attributes and the BIRADS Assessment</h3>
         <table>
             <tr>
-                <th>PatientID</th>
+                <th>S/N</th>
                 <th>Patient Name</th>
                 <th>Age</th>
                 <th>Mass Shape</th>
@@ -44,10 +44,11 @@
                 <th>Probability of Cancer</th>
                 <th>Radiologist</th>
                 <th>Approved</th>
+                <th>Uploaded At</th>
             </tr>
             {% for data in detailed_data %}
             <tr>
-                <td>{{ data.patient.patient_id }}</td>
+                <td>{{ forloop.counter }}</td>
                 <td>{{ data.patient.first_name }} {{ data.patient.last_name}}</td>
                 <td>{{ data.patient.age }}</td>
                 <td>{{ data.mass_shape|lower }}</td>
@@ -58,6 +59,7 @@
                 <td>{{ data.probability_of_cancer}}%</td>
                 <td>{{ data.radiologist.user.first_name }} {{data.radiologist.user.last_name}}</td>
                 <td>{{data.approved}}</td>
+                <td>{{ data.uploaded_at }}</td>
             </tr>
             {% endfor %}
         </table>

@@ -95,7 +95,7 @@ def predict_and_redirect_view(request, mammogram_id):
     mass_margin = mammogram.mass_margin
     mass_shape = mammogram.mass_shape
     breast_density = mammogram.breast_density
-    describe_prediction, birads_prediction, probability_of_cancer = describe_predict(mass_margin, mass_shape, breast_density)
+    describe_prediction, birads_prediction, probability_of_cancer, recommendation = describe_predict(mass_margin, mass_shape, breast_density)
     mammogram.descriptive_diagnosis = describe_prediction
     mammogram.birads_assessment = birads_prediction
     mammogram.probability_of_cancer = probability_of_cancer
@@ -563,11 +563,20 @@ def detailed_reports_view(request):
         radiologist = None
 
     if radiologist:
-        detailed_data = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=7)
+
+        detailed_data = Mammogram.objects.filter(
+            radiologist=radiologist,
+            uploaded_at__range=[start_date, end_date]
+            ).select_related("patient", "radiologist").order_by('-uploaded_at')
     else:
         detailed_data = Mammogram.objects.none()
 
-    return render(request, 'predictions/detailed_report.html', {'detailed_data': detailed_data})
+    return render(request, 'predictions/detailed_report.html', {
+        'detailed_data': detailed_data,
+        'start_date': start_date,
+        'end_date': end_date})
 
 def generate_detailed_report(request):
     try:
@@ -576,7 +585,14 @@ def generate_detailed_report(request):
         radiologist = None
 
     if radiologist:
-        mammograms = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=7)
+
+        mammograms = Mammogram.objects.filter(
+            radiologist=radiologist,
+            uploaded_at__range=[start_date, end_date]
+            ).select_related("patient", "radiologist").order_by('-uploaded_at')
+        
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="detailed_report.pdf"'
 
@@ -601,27 +617,28 @@ def generate_detailed_report(request):
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
         
-        elements.append(Paragraph("Breast Cancer Detailed Report", styles['CenteredHeading']))
+        elements.append(Paragraph(f"Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})", styles['CenteredHeading']))
         elements.append(Spacer(1, 20))
 
         # fetch data
         mammograms = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
 
         data = [
-            ["Patient Name", "Age", "Radiologist", "UploadedAt", "ModelDiagnosis", "Descriptive", "BIRADS", "PB", "Approved"]
+            ["S/N", "Patient Name", "Age", "Radiologist", "UploadedAt", "ModelDiagnosis", "Descriptive", "BIRADS", "PB", "Approved"]
         ]
 
-        for entry in mammograms:
+        for index, entry in enumerate(mammograms, start=1):
             radiologist_name = f"Dr. {entry.radiologist.user.first_name} {entry.radiologist.user.last_name}" if entry.radiologist else "N/A"
             data.append([
-                Paragraph(f"{entry.patient.first_name} {entry.patient.last_name}", styles["CustomBodyText"]),
-                Paragraph(str(entry.patient.age()), styles["CustomBodyText"]),
+                Paragraph(str(index), styles["CustomBodyText"]),
+                Paragraph(f"{entry.patient.first_name or 'N/A'} {entry.patient.last_name or 'N/A'}", styles["CustomBodyText"]),
+                Paragraph(str(entry.patient.age() or "N/A"), styles["CustomBodyText"]),
                 Paragraph(radiologist_name, styles["CustomBodyText"]),
-                Paragraph(entry.uploaded_at.strftime("%Y-%m-%d"), styles["CustomBodyText"]),
-                Paragraph(entry.model_diagnosis, styles["CustomBodyText"]),
-                Paragraph(entry.descriptive_diagnosis, styles["CustomBodyText"]),
-                Paragraph(entry.birads_assessment, styles["CustomBodyText"]),
-                Paragraph(f"{entry.probability_of_cancer}%", styles["CustomBodyText"]),
+                Paragraph(entry.uploaded_at.strftime("%Y-%m-%d") if entry.uploaded_at else "N/A", styles["CustomBodyText"]),
+                Paragraph(entry.model_diagnosis or "N/A", styles["CustomBodyText"]),
+                Paragraph(entry.descriptive_diagnosis or "N/A", styles["CustomBodyText"]),
+                Paragraph(entry.birads_assessment or "N/A", styles["CustomBodyText"]),
+                Paragraph(f"{entry.probability_of_cancer}%" if entry.probability_of_cancer is not None else "N/A", styles["CustomBodyText"]),
                 Paragraph("Yes" if entry.approved else "No", styles["CustomBodyText"])
             ])
             
@@ -658,6 +675,9 @@ def generate_detailed_report(request):
         return response
     else:
         mammograms = Mammogram.objects.none()
+        start_date = None
+        end_date = None
+
         return render(request, 'predictions/detailed_report.html', {'mammograms': mammograms})
 
 
@@ -669,11 +689,21 @@ def exceptional_reports_view(request):
         radiologist = None
 
     if radiologist:
-        disapproved_mammograms = DisapprovedMammogram.objects.filter(mammogram__radiologist=radiologist).select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=7)
+        disapproved_mammograms = DisapprovedMammogram.objects.filter(
+            mammogram__radiologist=radiologist,
+            mammogram__uploaded_at__range=[start_date, end_date]
+            ).select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
     else:
         disapproved_mammograms = DisapprovedMammogram.objects.none()
+        start_date = None
+        end_date = None
 
-    return render(request, 'predictions/exceptional_reports.html', {'disapproved_mammograms': disapproved_mammograms})
+    return render(request, 'predictions/exceptional_reports.html', {
+        'disapproved_mammograms': disapproved_mammograms,
+        'start_date': start_date,
+        'end_date': end_date})
 
 def generate_exceptional_report(request):
     try:
@@ -682,7 +712,12 @@ def generate_exceptional_report(request):
         radiologist = None
 
     if radiologist:
-        disapproved_mammograms = DisapprovedMammogram.objects.filter(mammogram__radiologist=radiologist).select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
+        end_date = timezone.now()
+        start_date = end_date - timedelta(days=7)
+        disapproved_mammograms = DisapprovedMammogram.objects.filter(
+            mammogram__radiologist=radiologist,
+            mammogram__uploaded_at__range=[start_date, end_date]
+            ).select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="exceptional_report.pdf"'
 
@@ -707,18 +742,18 @@ def generate_exceptional_report(request):
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
         
-        elements.append(Paragraph("Breast Cancer Exceptional Report", styles['CenteredHeading']))
+        elements.append(Paragraph(f"Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})", styles['CenteredHeading']))
         elements.append(Spacer(1, 20))
 
         # fetch data
         data = [
-            ["ID", "PatientName", "Age", "Radiologist", "ActualDiagnosis", "ActualDescriptive", "ActualBIRADS", "Uploaded At"]
+            ["S/N", "PatientName", "Age", "Radiologist", "ActualDiagnosis", "ActualDescriptive", "ActualBIRADS", "Uploaded At"]
         ]
 
-        for entry in disapproved_mammograms:
+        for index, entry in enumerate(disapproved_mammograms, start=1):
             radiologist_name = f"Dr. {entry.mammogram.radiologist.user.first_name} {entry.mammogram.radiologist.user.last_name}" if entry.mammogram.radiologist else "N/A"
             data.append([
-                Paragraph(str(entry.mammogram.patient.patient_id), styles["CustomBodyText"]),
+                Paragraph(str(index), styles["CustomBodyText"]),
                 Paragraph(f"{entry.mammogram.patient.first_name} {entry.mammogram.patient.last_name}", styles["CustomBodyText"]),
                 Paragraph(str(entry.mammogram.patient.age()), styles["CustomBodyText"]),
                 Paragraph(radiologist_name, styles["CustomBodyText"]),

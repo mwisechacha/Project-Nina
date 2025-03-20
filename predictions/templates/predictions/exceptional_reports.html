@@ -28,14 +28,14 @@
         </div>
     </div>
     <div class="exce-body">
-        <h1><u>Disapproved Diagnosis</u></h1>
+        <h1><u>Disapproved Diagnosis Report for the period between {{ start_date|date:"Y-m-d" }} and {{ end_date|date:"Y-m-d" }}</u></h1>
         <h3>These reports highlight the cases where the radiologist's assessment 
             differed from the model's prediction. The purpose of this report is to 
             identify and analyze discrepancies to improve the accuracy and reliability
             of the breast cancer detection system.</h3>
         <table>
             <tr>
-                <th>ID</th>
+                <th>S/N</th>
                 <th>Patient</th>
                 <th>Patient Age</th>
                 <th>Radiologist</th>
@@ -50,16 +50,16 @@
             </tr>
             {% for disapproved in disapproved_mammograms %}
             <tr>
-                <td>{{ disapproved.mammogram.patient.patient_id }}</td>
-                <td>{{ disapproved.mammogram.patient.first_name }} {{ disapproved.mammogram.patient.last_name }}</td>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ disapproved.mammogram.patient.first_name|lower }} {{ disapproved.mammogram.patient.last_name|lower }}</td>
                 <td>{{ disapproved.mammogram.patient.age }}</td>
-                <td>{{ disapproved.mammogram.radiologist.user.first_name }} {{ disapproved.mammogram.radiologist.user.last_name }}</td>
-                <td>{{ disapproved.mammogram.model_diagnosis }}</td>
-                <td>{{ disapproved.pathology_actual }}</td>
-                <td>{{ disapproved.mammogram.descriptive_diagnosis }}</td>
-                <td>{{ disapproved.descriptive_actual }}</td>
-                <td>{{ disapproved.mammogram.birads_assessment }}</td>
-                <td>{{ disapproved.birads_actual }}</td>
+                <td>{{ disapproved.mammogram.radiologist.user.first_name|lower }} {{ disapproved.mammogram.radiologist.user.last_name|lower }}</td>
+                <td>{{ disapproved.mammogram.model_diagnosis|lower }}</td>
+                <td>{{ disapproved.pathology_actual|lower }}</td>
+                <td>{{ disapproved.mammogram.descriptive_diagnosis|lower }}</td>
+                <td>{{ disapproved.descriptive_actual|lower }}</td>
+                <td>{{ disapproved.mammogram.birads_assessment|lower }}</td>
+                <td>{{ disapproved.birads_actual|lower }}</td>
                 <td>{{ disapproved.comments }}</td>
                 <td>{{ disapproved.mammogram.uploaded_at }}</td>
             </tr>
