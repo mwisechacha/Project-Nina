@@ -12,6 +12,13 @@
     <div class="container_a" style="
         max-width: 1440px;
         margin-inline: auto;">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
         <div class="top-section">
                 <div class="logo-container">
                     <a href="{% url 'home' %}">

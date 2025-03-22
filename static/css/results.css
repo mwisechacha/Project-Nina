@@ -460,3 +460,25 @@ select:focus{
     font-size: 16px;
     cursor: pointer;
 }
+
+.messages {
+    margin: 1rem 0;
+    padding: 1rem;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.alert {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}

@@ -116,11 +116,19 @@ def results_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
     if request.method == 'POST':
         if 'approve' in request.POST:
+            if mammogram.approved:
+                messages.error(request, 'Diagnosis has already been approved.')
+                return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
+            
             mammogram.approved = True
             mammogram.save()
-            messages.success(request, 'Diagnosis approved successfully.')
+            messages.success(request, 'Hurray! Diagnosis has been approved. Check the diagnosis report for more information.')
             return HttpResponseRedirect(reverse('generate_report', args=[mammogram.image_id]))
         else:
+            if DisapprovedMammogram.objects.filter(mammogram=mammogram).exists():
+                messages.error(request, 'Diagnosis has already been disapproved.')
+                return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
+            
             form = DisapproveForm(request.POST)
             if form.is_valid():
                 pathology_actual = form.cleaned_data['pathology_actual']
@@ -138,7 +146,7 @@ def results_view(request, mammogram_id):
 
                 mammogram.approved = False
                 mammogram.save()
-                messages.success(request, 'Diagnosis disapproved successfully.')
+                messages.success(request, 'Diagnosis Rejected. Please try uploading another image.')
                 return HttpResponseRedirect(reverse('results', args=[mammogram.image_id]))
     else:
         form = DisapproveForm(initial={
@@ -594,7 +602,7 @@ def generate_detailed_report(request):
             ).select_related("patient", "radiologist").order_by('-uploaded_at')
         
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="detailed_report.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="detailed_report_{start_date}.pdf"'
 
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -719,7 +727,7 @@ def generate_exceptional_report(request):
             mammogram__uploaded_at__range=[start_date, end_date]
             ).select_related("mammogram__patient", "mammogram__radiologist").order_by('-mammogram__uploaded_at')
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="exceptional_report.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="exceptional_report_{start_date}.pdf"'
 
         buffer = BytesIO()
         doc = SimpleDocTemplate(buffer, pagesize=letter)
@@ -797,9 +805,6 @@ def generate_exceptional_report(request):
     else:
         disapproved_mammograms = DisapprovedMammogram.objects.none()
         return render(request, 'predictions/exceptional_reports.html', {'disapproved_mammograms': disapproved_mammograms})
-
-    
-
 
 def reports_view(request):
     try:
