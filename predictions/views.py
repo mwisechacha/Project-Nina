@@ -14,7 +14,10 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
+from reportlab.lib.units import mm
 from reportlab.lib.enums import TA_RIGHT
+from reportlab.pdfgen import canvas
+from reportlab.platypus import PageTemplate, BaseDocTemplate, Frame, Paragraph
 from statistics import mean
 from .forms import MammogramForm, DisapproveForm
 from .models import Mammogram, ModelMetrics, Patient, WeeklySummary, Radiologist, DisapprovedMammogram
@@ -210,6 +213,12 @@ def generate_report_view(request, mammogram_id):
     response['Content-Disposition'] = f'attachment; filename="{patient.first_name}{patient.last_name}_diagnosis report_{mammogram_id}.pdf"'
 
     buffer = BytesIO()
+
+    def add_page_number(canvas, doc):
+            page_number_text = f"Page {doc.page}"
+            canvas.setFont("Helvetica", 10)
+            canvas.drawRightString(200 * mm, 10 * mm, page_number_text)
+
     doc = SimpleDocTemplate(buffer, pagesize=letter)
 
     styles = getSampleStyleSheet()
@@ -320,7 +329,7 @@ def generate_report_view(request, mammogram_id):
     footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
     elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-    doc.build(elements)
+    doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
 
     pdf = buffer.getvalue()
     buffer.close()
@@ -458,6 +467,12 @@ def weekly_summary_report(request):
         response['Content-Disposition'] = f'attachment; filename="weekly_summary_{summary.week_start}.pdf"'
 
         buffer = BytesIO()
+
+        def add_page_number(canvas, doc):
+            page_number_text = f"Page {doc.page}"
+            canvas.setFont("Helvetica", 10)
+            canvas.drawRightString(200 * mm, 10 * mm, page_number_text)
+
         doc = SimpleDocTemplate(buffer, pagesize=letter)
 
         styles = getSampleStyleSheet()
@@ -551,7 +566,7 @@ def weekly_summary_report(request):
         footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
         elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-        doc.build(elements)
+        doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
 
         pdf = buffer.getvalue()
         buffer.close()
@@ -605,6 +620,12 @@ def generate_detailed_report(request):
         response['Content-Disposition'] = f'attachment; filename="detailed_report_{start_date}.pdf"'
 
         buffer = BytesIO()
+
+        def add_page_number(canvas, doc):
+            page_number_text = f"Page {doc.page}"
+            canvas.setFont("Helvetica", 10)
+            canvas.drawRightString(200 * mm, 10 * mm, page_number_text)
+
         doc = SimpleDocTemplate(buffer, pagesize=letter)
 
         styles = getSampleStyleSheet()
@@ -674,7 +695,7 @@ def generate_detailed_report(request):
         footer_text = "Nina Breast Cancer Detection System"
         elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-        doc.build(elements)
+        doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
 
         pdf = buffer.getvalue()
         buffer.close()
@@ -730,6 +751,13 @@ def generate_exceptional_report(request):
         response['Content-Disposition'] = f'attachment; filename="exceptional_report_{start_date}.pdf"'
 
         buffer = BytesIO()
+
+        # add page number
+        def add_page_number(canvas, doc):
+            page_number_text = f"Page {doc.page}"
+            canvas.setFont("Helvetica", 10)
+            canvas.drawRightString(200 * mm, 10 * mm, page_number_text)
+
         doc = SimpleDocTemplate(buffer, pagesize=letter)
 
         styles = getSampleStyleSheet()
@@ -795,7 +823,7 @@ def generate_exceptional_report(request):
         footer_text = "Nina Breast Cancer Detection System"
         elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
-        doc.build(elements)
+        doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
         
         pdf = buffer.getvalue()
         buffer.close()
