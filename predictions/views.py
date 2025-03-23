@@ -94,11 +94,17 @@ def predict_and_redirect_view(request, mammogram_id):
     prediction_result = predict(mammogram.image.path)
     mammogram.model_diagnosis = prediction_result
 
-    # predictions based on mass attributes
+    # predictions based on mass attributes and image
     mass_margin = mammogram.mass_margin
     mass_shape = mammogram.mass_shape
     breast_density = mammogram.breast_density
-    describe_prediction, birads_prediction, probability_of_cancer, recommendation = describe_predict(mass_margin, mass_shape, breast_density)
+    image_path = mammogram.image.path
+
+
+    describe_prediction, birads_prediction, probability_of_cancer, recommendation = describe_predict(
+        mass_margin, mass_shape, breast_density, image_path
+        )
+    
     mammogram.descriptive_diagnosis = describe_prediction
     mammogram.birads_assessment = birads_prediction
     mammogram.probability_of_cancer = probability_of_cancer
@@ -207,7 +213,7 @@ def generate_report_view(request, mammogram_id):
     patient = mammogram.patient
 
     # get recommendation
-    _, _, _, recommendation = describe_predict(mammogram.mass_margin, mammogram.mass_shape, mammogram.breast_density)
+    _, _, _, recommendation = describe_predict(mammogram.mass_margin, mammogram.mass_shape, mammogram.breast_density, mammogram.image.path)
 
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = f'attachment; filename="{patient.first_name}{patient.last_name}_diagnosis report_{mammogram_id}.pdf"'

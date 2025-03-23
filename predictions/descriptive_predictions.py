@@ -2,6 +2,8 @@ import joblib
 import os
 import pandas as pd
 
+from predictions.predictions import predict
+
 model_path = os.path.join(os.path.dirname(__file__), 'model', 'binary_model_1.pkl')
 MODEL_1 = joblib.load(model_path)
 
@@ -19,6 +21,7 @@ BREAST_DENSITY_MAPPING = {
 
 MODEL_2 = joblib.load(os.path.join(os.path.dirname(__file__), 'model', 'BIRADS_model.pkl'))
 PIPELINE_2 = joblib.load(os.path.join(os.path.dirname(__file__), 'pipeline', 'binary_pipeline_2.pkl'))
+# print(PIPELINE_2.named_steps['preprocessor'].transformers_[0][1].categories_)
 LABELS_2 = {0: 'Incomplete',
             1: 'Negative',
             2: 'Benign',
@@ -36,15 +39,31 @@ RECOMMENDATIONS = {
 }
 
 
-def describe_predict(mass_margin, mass_shape, breast_density):
+def describe_predict(mass_margin, mass_shape, breast_density, image_path):
     # check for missing values
-    if mass_margin is None or mass_shape is None or breast_density is None:
+    if mass_margin is None or mass_shape is None or breast_density is None or image_path is None:
         raise ValueError("Missing values")
     
     # map breast density
     breast_density = BREAST_DENSITY_MAPPING[breast_density]
     
     features = [[mass_margin, mass_shape, breast_density]]
+
+    try:
+        pathology_prediction_label = predict(image_path)
+        print(f"ResNet Model prediction: {pathology_prediction_label}")
+
+        pathology_mapping = {
+            'Benign': 'BENIGN',
+            'Malignant': 'MALIGNANT'
+        }
+
+        pathology_prediction_label = pathology_mapping[pathology_prediction_label]
+        if pathology_prediction_label is None:
+            raise ValueError(f"Unexpected pathology label: {pathology_prediction_label}")
+        
+    except Exception as e:
+        raise RuntimeError(f"ResNet Model prediction failed: {e}")
 
     # model 1: predict pathology
     try:
@@ -65,7 +84,7 @@ def describe_predict(mass_margin, mass_shape, breast_density):
 
     # model 2: predict BI-RADS
     try:
-        features_2 = [[mass_margin, mass_shape, breast_density, prediction_label]]
+        features_2 = [[mass_margin, mass_shape, breast_density, pathology_prediction_label]]
         features_df_2 = pd.DataFrame(features_2, columns=COLUMN_NAMES + ['pathology'])
 
         if features_df_2.isnull().values.any():
@@ -97,4 +116,4 @@ def describe_predict(mass_margin, mass_shape, breast_density):
     except Exception as e:
         raise RuntimeError(f"Model 2 prediction failed: {e}")
 
-    return prediction_label, prediction_label_2, probability_of_cancer, recommendation
+    return pathology_prediction_label, prediction_label_2, probability_of_cancer, recommendation
