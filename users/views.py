@@ -120,19 +120,22 @@ def request_demo_view(request):
     if request.method == 'POST':
         form = RequestDemoForm(request.POST)
         if form.is_valid():
-            # save to db and send and email
-            form.save()
-
             # get user's email
             user_name = form.cleaned_data.get('name')
             user_email = form.cleaned_data.get('email')
+            reason = form.cleaned_data.get('reason')
+            interest = form.cleaned_data.get('interest')
+
+            form.save()
 
             # prepare email
             subject = 'ProjectNina: Video Demo'
+            google_drive_link = 'https://drive.google.com/drive/folders/1BUUPwn5zn3EKIp5SiYvtWykmGY5M9gm6?usp=sharing'
             message = (
                 f'Hi {user_name},\n\n'
                 'Thank you for requesting a demo of ProjectNina. '
-                'Please Find the demo video attached to this email.\n\n'
+                'You can view the demo video using the link below.\n\n'
+                f'{google_drive_link}\n\n'
                 'Best regards,\n'
                 'ProjectNina Team'
             )
@@ -146,8 +149,8 @@ def request_demo_view(request):
                 from_email=from_email,
                 to=recipient_list,
             )
-            demo_video_path = os.path.join(settings.BASE_DIR, 'static', 'users', 'demo.mp4')
-            email.attach_file(demo_video_path)
+            # demo_video_path = os.path.join(settings.BASE_DIR, 'static', 'users', 'demo.mp4')
+            # email.attach_file(demo_video_path)
 
             # send email
             try:
@@ -158,6 +161,7 @@ def request_demo_view(request):
 
             return redirect('home')
         else:
+            print(form.errors)
             messages.error(request, 'Please correct the errors.')
     else:
         form = RequestDemoForm()

@@ -18,40 +18,38 @@
                 {% csrf_token %}
                 <div class="form-group">
                     <label for="name">Name</label>
-                    <input type="text" name="name" id="name" placeholder="Enter your full name" required>
+                    <input type="text" name="name" id="name" placeholder="Enter your full name" required
+                    value="{{ form.name.value|default_if_none:'' }}">
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" name="email" id="email" placeholder="example@gmail.com" required>
+                    <input type="email" name="email" id="email" placeholder="example@gmail.com" required
+                    value="{{ form.email.value|default_if_none:'' }}">
                 </div>
                 
                 <div class="form-group">
                     <label for="reason">Reason for Demo</label>
                     <div class="radio-flex">
-                        
-                            <label>
+                        <label for="learn-more">
                             <input type="radio" id="learn-more" name="reason" value="learn-more" required />
                             Learn more
-                            </label>
-                        
-                            <label>
-                                <input type="radio" id="try-out" name="reason" value="try-out" required />
-                                Try out
-                            </label>
-                        
+                        </label>
+                        <label for="try-it-out">
+                            <input type="radio" id="try-it-out" name="reason" value="try-it-out" required />
+                            Try out
+                        </label>
                     </div>
-                    
                 </div>
 
                 <div class="form-group">
-                <label for="interest">Area of interest</label>
-                <select name="interest" id="interest" required>
-                    <option value="machine-learning">Machine Learning</option>
-                    <option value="data-analysis">Data Analysis</option>
-                    <option value="Healthcare">Healthcare</option>
-                    <option value="other">Other</option>
-                </select>
+                    <label for="interest">Area of Interest</label>
+                    <select name="interest" id="interest" required>
+                        <option value="machine-learning">Machine Learning</option>
+                        <option value="data-analysis">Data Analysis</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="other">Other</option>
+                    </select>
                 </div>
 
                 <button type="submit">Submit</button>
@@ -59,8 +57,8 @@
                     {% for message in messages %}
                         <div class="error-messages">
                             <p class="error">{{ message }}</p>
-                    {% endfor %}
                         </div>
+                    {% endfor %}
                 {% endif %}
             </form>
         </div>
