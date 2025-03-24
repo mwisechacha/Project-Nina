@@ -21,22 +21,28 @@
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" name="username" id="username" placeholder="Enter your username" required
-                class="{% if form.username.errors %}error{% endif %}"
-                default="{{ form.username.value }}">
+                value="{{ form.username.value|default_if_none:''}}"
+                class="{% if form.username.errors %}error{% endif %}">
             </div>
             <div class="form-group">
                 <div class="form-name">
                     <div class="form-fname">
                         <label for="first_name">First Name</label>
                         <input type="text" name="first_name" id="first_name" placeholder="Enter your first name" required
-                        class="{% if form.first_name.errors %}error{% endif %}"
-                        default="{{ form.first_name.value }}">
+                        value="{{ form.first_name.value|default_if_none:''}}"
+                        class="{% if form.first_name.errors %}error{% endif %}">
+                        {% for error in form.first_name.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
                     </div>
                     <div class="form-lname">
                         <label for="last_name">Last Name</label>
                         <input type="text" name="last_name" id="last_name" placeholder="Enter your last name" required
-                        class="{% if form.last_name.errors %}error{% endif %}"
-                        default="{{ form.last_name.value }}">
+                        value="{{ form.last_name.value|default_if_none:''}}"
+                        class="{% if form.last_name.errors %}error{% endif %}">
+                        {% for error in form.last_name.errors %}
+                            <p class="error">{{ error }}</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -44,15 +50,18 @@
             <div class="form-group">
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" placeholder="example@gmail.com" required 
-                class="{% if form.email.errors %}error{% endif %}"
-                default="{{ form.email.value }}">
+                value="{{ form.email.value|default_if_none:''}}"
+                class="{% if form.email.errors %}error{% endif %}">
+                {% for error in form.email.errors %}
+                    <p class="error">{{ error }}</p>
+                {% endfor %}
             </div>
             
             <div class="form-group">
                 <label for="organization">Organization</label>
                 <input type="text" name="organization" id="organization" placeholder="Enter your organization name" required
-                class="{% if form.organization.errors %}error{% endif %}"
-                default="{{ form.organization.value }}">
+                value="{{ form.organization.value|default_if_none:''}}"
+                class="{% if form.organization.errors %}error{% endif %}">
             </div>
             
             <div class="password-group">
@@ -60,22 +69,27 @@
                     <label for="password1">Password</label>
                     <input type="password" name="password1" id="password1" placeholder="********" required
                     class="{% if form.password1.errors %}error{% endif %}">
+                    {% for error in form.password1.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
                 <div class="form-group">
                     <label for="password2">Confirm Password</label>
                     <input type="password" name="password2" id="password2" placeholder="*********" required
-                    class="{% if form.password2.errors %}error{% endif %}"
-                    >
+                    class="{% if form.password2.errors %}error{% endif %}">
+                    {% for error in form.password2.errors %}
+                        <p class="error">{{ error }}</p>
+                    {% endfor %}
                 </div>
             </div>
             <button type="submit" class="register-btn">Register</button>
         </form>
-        {% if messages %}
-            {% for message in messages %}
-                <div class="error-messages">
-                    <p class="error">{{ message }}</p>
+        {% if form.non_field_errors %}
+            <div class="error-messages">
+            {% for message in form.non_field_errors %}
+                <p class="error">{{ error }}</p>
             {% endfor %}
-                </div>
+            </div>
         {% endif %}
         <p class="footer-text">
             Already have an account? <a href="{% url 'login' %}">Login</a>

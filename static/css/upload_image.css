@@ -179,6 +179,18 @@ body{
     text-align: center;
 }
 
+.drop-zone{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+small span{
+    color: #94126A;
+    text-underline-position: below;
+}
+
 .upload-icon img{
     width: 120px;
 }
@@ -211,6 +223,14 @@ button{
     width: 200px;
     cursor: pointer;
     font-size: 14px;
+}
+
+small{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    color: black;
+    word-spacing: 4px;
+    font-weight: 400;
 }
 
 .form-preview{
@@ -269,4 +289,39 @@ select::-ms-expand{
 select:focus{
     border-color: #ffccdd;
     outline: none;
+}
+
+input.error{
+    border-color: red;
+}
+
+p.error {
+    color: red;
+    font-size: 14px;
+    margin: 16px 8px;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.success-message {
+    color: green;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.error {
+    border: 2px solid red;
+}
+
+.messages p{
+    display: flex;
+    text-align: center;
+    color: red;
+    font-size: 18px;
+    max-width: 60ch;
+    justify-content: center;
 }

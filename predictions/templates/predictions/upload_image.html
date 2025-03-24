@@ -42,9 +42,18 @@
                 <p><span><u>Enter</u></span> patient's details and <span><u>Upload</u></span>
                 a mammogram</p>
             </div>
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p class="{% if message.tags == 'error' %}error-message{% elif message.tags == 'success' %}success-message{% endif %}">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                </div>
+            {% endif %}
             <div class="patient-details">
                 <div class="patient">
-                    <label for="patient_name">Patient First Name</label>
+                    <label for="patient_first_name">Patient First Name</label>
                     <input type="text" name="patient_first_name" id="patient_first_name" required
                     value="{{ form.first_name.value|default_if_none:'' }}">
                 </div>
@@ -56,16 +65,23 @@
                 <div class="patient">
                     <label for="patient_date_of_birth">Patient Date of Birth</label>
                     <input type="date" name="patient_date_of_birth" id="patient_date_of_birth" required
-                    value="{{ form.date_of_birth.value|default_if_none:'' }}">
+                    value="{{ form.date_of_birth.value|default_if_none:'' }}"
+                    max="{{ today|date:'Y-m-d' }}"
+                    class="{% if form.patient_date_of_birth.errors %}error{% endif %}">
+                    
+                    {% for error in form.patient_date_of_birth.errors %}
+                        <p class="error-message">{{ error }}</p>
+                    {% endfor %}
                 </div>
             </div>
             <div class="drag-zone">
                 <div class="upload-icon">
                     <img src="{% static 'images/drop-icon.png' %}" alt="Upload Icon">
                 </div>
-                <div>
+                <div class="drop-zone">
                     <p class="drop-zone__prompt"> <span class="browse">Browse</span> to Upload</p>
-                    <input type="file" name="image" class="drop-zone__input" id="upload-input" hidden required> 
+                    <input type="file" name="image" class="drop-zone__input" id="upload-input" hidden accept=".jpg, .jpeg, .png" required> 
+                    <small class="file-warning" style="color: red display: none;">Please upload a <span><u>JPG</u></span> <span><u>JPEG</u></span> or <span><u>PNG</u></span> file</small>
                 </div>
                 <div>
                     <button type="button" id="upload-button">Upload Image</button>
@@ -74,6 +90,10 @@
 
             <div class="form-preview" style="display: none;">
                 <img src="{% static 'images/mammogram.png' %}" alt="Mammogram" class="mammogram-image">
+                <div class="confirm-image">
+                    <input type="checkbox" id="confirm-checkbox" required>
+                    <label for="confirm-checkbox">I confirm that this is the correct mammogram.</label>
+                </div>
                 <button type="button" id="change-image">Change Image</button>
                 <div class="form-group">
                     <label for="breast_density">Breast Density</label>
@@ -158,6 +178,35 @@
         document.getElementById('change-image').addEventListener('click', function() {
             document.querySelector('.drag-zone').style.display = 'flex';
             document.querySelector('.form-preview').style.display = 'none';
+        });
+        // document.addEventListener("DOMContentLoaded", function () {
+        //     let dobInput = document.getElementById("patient_date_of_birth");
+        //     let today = new Date().toISOString().split("T")[0];
+        //     dobInput.setAttribute("max", today);
+
+        //     dobInput.addEventListener("change", function () {
+        //         if (dobInput.value > today) {
+        //             alert("Date of birth cannot be in the future.");
+        //             dobInput.value = "";
+        //         }
+        //     });
+        // });
+        document.addEventListener("DOMContentLoaded", function () {
+            const fileInput = document.getElementById("id_image");
+            const warningMessage = document.querySelector(".file-warning");
+
+            fileInput.addEventListener("change", function () {
+                const allowedExtensions = ['jpg', 'jpeg', 'png'];
+                const fileName = fileInput.value.toLowerCase();
+                const fileExtension = fileName.split('.').pop();
+
+                if (!allowedExtensions.includes(fileExtension)) {
+                    warningMessage.style.display = "inline";
+                    fileInput.value = "";  // Reset the file input
+                } else {
+                    warningMessage.style.display = "none";
+                }
+            });
         });
     </script>
 </body>

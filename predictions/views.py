@@ -29,37 +29,32 @@ import os
 
 def upload_mammogram(request):
     image_id = request.GET.get('image_id')
-
-    # search for patient
-    search_query = request.GET.get('search', '')
-
-    patient = []
-    if search_query:
-        patients = Patient.objects.filter(
-            Q(first_name__icontains=search_query) | 
-            Q(last_name__icontains=search_query) |
-            Q(date_of_birth__icontains=search_query)
-        )
-
-
+    
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
-        selected_patient_id = request.POST.get('selected_patient_id')
+        
+        first_name = request.POST.get('patient_first_name')
+        last_name = request.POST.get('patient_last_name')
+        date_of_birth = request.POST.get('patient_date_of_birth')
+        patient, created = Patient.objects.get_or_create(
+            first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
+        )
 
-        if selected_patient_id:
-            patient = Patient.objects.get(id=selected_patient_id)
-        else:
-            first_name = request.POST.get('patient_first_name')
-            last_name = request.POST.get('patient_last_name')
-            date_of_birth = request.POST.get('patient_date_of_birth')
-            patient, created = Patient.objects.get_or_create(
-                first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
-            )
+        
 
         try:
             radiologist = Radiologist.objects.get(user=request.user)
         except ObjectDoesNotExist:
             radiologist = Radiologist.objects.create(user=request.user)
+
+        # validate image
+        image = request.FILES.get('image')
+        if image:
+            valid_extensions = ['.png', '.jpg', '.jpeg']   
+            ext = os.path.splitext(image.name)[1].lower()
+            if ext not in valid_extensions:
+                messages.error(request, 'Invalid image format. Only PNG, JPG, and JPEG are allowed.')
+                return render(request, 'predictions/upload_image.html', {'mammogram_form': mammogram_form})
 
         if mammogram_form.is_valid():  
             mammogram = mammogram_form.save(commit=False)
@@ -71,7 +66,8 @@ def upload_mammogram(request):
             return HttpResponseRedirect(reverse('process_mammogram', args=[mammogram.image_id]))
         
         else:
-            print(mammogram_form.errors)
+            messages.error(request, "Please enter correct date of birth.")
+
     if image_id:
         image_path = os.path.join(settings.MEDIA_ROOT, 'images', f'images/mammograms/{image_id}.jpg')
         if os.path.exists(image_path):
@@ -659,7 +655,7 @@ def generate_detailed_report(request):
         mammograms = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
 
         data = [
-            ["S/N", "PName", "Age", "Radiologist", "UploadedAt", "MD", "Descr", "BI-RADS", "PB", "APR"]
+            ["S/N", "PName", "Age", "Radiologist", "Analysis Date", "MD", "Descr", "BI-RADS", "PB", "APR"]
         ]
 
         for index, entry in enumerate(mammograms, start=1):
