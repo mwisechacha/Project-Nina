@@ -579,6 +579,39 @@ def weekly_summary_report(request):
         summary = None
         return render(request, 'predictions/weekly_summary.html', {'weekly_summary': summary})
 
+@login_required
+def benign_reports(request):
+    try:
+        radiologist = Radiologist.objects.get(user=request.user)
+    except Radiologist.DoesNotExist:
+        radiologist = None
+
+    if radiologist:
+        benign_data = Mammogram.objects.filter(
+            radiologist=radiologist,
+            model_diagnosis='Benign'
+        ).select_related("patient", "radiologist").order_by('-uploaded_at')
+    else:
+        benign_data = Mammogram.objects.none()
+
+    return render(request, 'predictions/benign_reports.html', {'benign_data': benign_data})
+
+@login_required
+def malignant_reports(request):
+    try:
+        radiologist = Radiologist.objects.get(user=request.user)
+    except Radiologist.DoesNotExist:
+        radiologist = None
+
+    if radiologist:
+        malignant_data = Mammogram.objects.filter(
+            radiologist=radiologist,
+            model_diagnosis='Malignant'
+        ).select_related("patient", "radiologist").order_by('-uploaded_at')
+    else:
+        malignant_data = Mammogram.objects.none()
+
+    return render(request, 'predictions/malignant_reports.html', {'malignant_data': malignant_data})
 
 @login_required
 def detailed_reports_view(request):
@@ -586,6 +619,8 @@ def detailed_reports_view(request):
         radiologist = Radiologist.objects.get(user=request.user)
     except Radiologist.DoesNotExist:
         radiologist = None
+
+    filter_option = request.GET.get('filter', 'all')
 
     if radiologist:
         end_date = timezone.now()
@@ -595,11 +630,22 @@ def detailed_reports_view(request):
             radiologist=radiologist,
             uploaded_at__range=[start_date, end_date]
             ).select_related("patient", "radiologist").order_by('-uploaded_at')
+        
+        # apply filters
+        if filter_option == 'benign':
+            detailed_data = detailed_data.filter(model_diagnosis='Benign')
+        elif filter_option == 'malignant':
+            detailed_data = detailed_data.filter(model_diagnosis='Malignant')
+        elif filter_option == 'approved':
+            detailed_data = detailed_data.filter(approved=True)
+        elif filter_option == 'disapproved':
+            detailed_data = detailed_data.filter(approved=False)
     else:
         detailed_data = Mammogram.objects.none()
 
     return render(request, 'predictions/detailed_report.html', {
         'detailed_data': detailed_data,
+        'filter': filter_option,
         'start_date': start_date,
         'end_date': end_date})
 
@@ -613,13 +659,24 @@ def generate_detailed_report(request):
         end_date = timezone.now()
         start_date = end_date - timedelta(days=7)
 
+        filter_option = request.GET.get('filter', 'all')
+
         mammograms = Mammogram.objects.filter(
             radiologist=radiologist,
             uploaded_at__range=[start_date, end_date]
             ).select_related("patient", "radiologist").order_by('-uploaded_at')
         
+        if filter_option == 'benign':
+            mammograms = mammograms.filter(model_diagnosis='Benign')
+        elif filter_option == 'malignant':
+            mammograms = mammograms.filter(model_diagnosis='Malignant')
+        elif filter_option == 'approved':
+            mammograms = mammograms.filter(approved=True)
+        elif filter_option == 'disapproved':
+            mammograms = mammograms.filter(approved=False)
+
         response = HttpResponse(content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="detailed_report_{start_date}.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="detailed_report_{filter_option}_{start_date}.pdf"'
 
         buffer = BytesIO()
 
@@ -648,29 +705,26 @@ def generate_detailed_report(request):
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
         
-        elements.append(Paragraph(f"""Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})""", styles['Title']))
+        elements.append(Paragraph(f"""Breast Cancer Report {filter_option.capitalize()} cases, for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})""", styles['Title']))
         elements.append(Spacer(1, 20))
-
-        # fetch data
-        mammograms = Mammogram.objects.filter(radiologist=radiologist).select_related("patient", "radiologist").order_by('-uploaded_at')
 
         data = [
             ["S/N", "PName", "Age", "Radiologist", "Analysis Date", "MD", "Descr", "BI-RADS", "PB", "APR"]
         ]
 
-        for index, entry in enumerate(mammograms, start=1):
-            radiologist_name = f"Dr. {entry.radiologist.user.first_name} {entry.radiologist.user.last_name}" if entry.radiologist else "N/A"
+        for index, mammogram in enumerate(mammograms, start=1):
+            radiologist_name = f"Dr. {mammogram.radiologist.user.first_name} {mammogram.radiologist.user.last_name}" if mammogram.radiologist else "N/A"
             data.append([
                 Paragraph(str(index), styles["CustomBodyText"]),
-                Paragraph(f"{entry.patient.first_name or 'N/A'} {entry.patient.last_name or 'N/A'}", styles["CustomBodyText"]),
-                Paragraph(str(entry.patient.age() or "N/A"), styles["CustomBodyText"]),
+                Paragraph(f"{mammogram.patient.first_name or 'N/A'} {mammogram.patient.last_name or 'N/A'}", styles["CustomBodyText"]),
+                Paragraph(str(mammogram.patient.age() or "N/A"), styles["CustomBodyText"]),
                 Paragraph(radiologist_name, styles["CustomBodyText"]),
-                Paragraph(entry.uploaded_at.strftime("%Y-%m-%d") if entry.uploaded_at else "N/A", styles["CustomBodyText"]),
-                Paragraph(entry.model_diagnosis.lower() or "N/A", styles["CustomBodyText"]),
-                Paragraph(entry.descriptive_diagnosis.lower() or "N/A", styles["CustomBodyText"]),
-                Paragraph(entry.birads_assessment or "N/A", styles["CustomBodyText"]),
-                Paragraph(f"{entry.probability_of_cancer}%" if entry.probability_of_cancer is not None else "N/A", styles["CustomBodyText"]),
-                Paragraph("Yes" if entry.approved else "No", styles["CustomBodyText"])
+                Paragraph(mammogram.uploaded_at.strftime("%Y-%m-%d") if mammogram.uploaded_at else "N/A", styles["CustomBodyText"]),
+                Paragraph(mammogram.model_diagnosis.lower() or "N/A", styles["CustomBodyText"]),
+                Paragraph(mammogram.descriptive_diagnosis.lower() or "N/A", styles["CustomBodyText"]),
+                Paragraph(mammogram.birads_assessment or "N/A", styles["CustomBodyText"]),
+                Paragraph(f"{mammogram.probability_of_cancer}%" if mammogram.probability_of_cancer is not None else "N/A", styles["CustomBodyText"]),
+                Paragraph("Yes" if mammogram.approved else "No", styles["CustomBodyText"])
             ])
             
         table = Table(data, colWidths=[30, 80, 40, 80, 80, 70, 65, 90, 40, 40]) 

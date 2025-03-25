@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detailed Report</title>
-    {% load static %}
-    {% load custom_filters %}
     <link rel="stylesheet" href="{% static 'css/detailed_report.css' %}">
+    <title>Malignant Reports</title>
 </head>
-<body style="padding: 0 80px;">
+<body>
     <div class="header" style="padding: 0;">
         <div class="btn btn-back">
             <a href="{% url 'reports' %}">Back</a>
@@ -24,24 +22,11 @@
             </div>
         </div>
         <div class="btn btn-download">
-            <a href="{% url 'generate_detailed_report' %}?filter={{ filter }}">Download Report</a>
+            <a href="{% url 'generate_detailed_report' %}">Download Report</a>
         </div>
-       </div>
-
+    </div>
        <div class="detailed-body">
-        <h1 style="text-align: center;"><u>Diagnosis Report for the period between {{ start_date|date:"Y-m-d" }} and {{ end_date|date:"Y-m-d" }}</u></h1>
-        <h3 style="text-align: center;">Report showing each mammogram analysis, including patient information, the radiologist, diagnosis, mass attributes and the BI-RADS Assessment</h3>
-
-        <form class="form-filters" method="GET" action="{% url 'detailed_reports' %}">
-            <label for="filter">Filter Reports</label>
-            <select name="filter" id="filter" onchange="this.form.submit()">
-                <option value="all" {% if filter == 'all' %} selected {% endif %}>All</option>
-                <option value="benign" {% if filter == 'benign' %} selected {% endif %}>Benign</option>
-                <option value="malignant" {% if filter == 'malignant' %} selected {% endif %}>Malignant</option>
-                <option value="approved" {% if filter == 'approved' %} selected {% endif %}>Approved</option>
-                <option value="disapproved" {% if filter == 'disapproved' %} selected {% endif %}>Disapproved</option>
-            </select>
-        </form>
+        <h1>Benign Records</h1>
         <table>
             <tr>
                 <th>S/N</th>
@@ -57,7 +42,7 @@
                 <th>Approved</th>
                 <th>Analysis Date</th>
             </tr>
-            {% for data in detailed_data %}
+            {% for data in benign_data %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ data.patient.first_name }} {{ data.patient.last_name}}</td>
@@ -66,8 +51,8 @@
                 <td>{{ data.mass_margin|lower }}</td>
                 <td>{{ data.breast_density }}</td>
                 <td>{{ data.model_diagnosis }}</td>
-                <td>{{ data.birads_assessment }}</td>
-                <td>{{ data.probability_of_cancer}}%</td>
+                <td>{{ data.birads_assessment}}</td>
+                <td>{{ data.probability_of_cancer}}</td>
                 <td>{{ data.radiologist.user.first_name }} {{data.radiologist.user.last_name}}</td>
                 <td>{{ data.approved }}</td>
                 <td>{{ data.uploaded_at }}</td>
@@ -78,9 +63,8 @@
             </tr>
             {% endfor %}
         </table>
-       </div>
-
-       <div class="footer">
+    </div>
+    <div class="footer">
         <div class="footer-logo">
             <a href="{% url 'home' %}">
                 <img style="padding: 10px;" src="{% static 'images/nina-logo.png' %}" alt="Nina Logo">
@@ -89,6 +73,5 @@
         <div class="footer-description">
             <h1>Nina Breast Cancer Detection System</h1>
        </div>
-    
 </body>
 </html>
