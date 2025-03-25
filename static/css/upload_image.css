@@ -325,3 +325,22 @@ p.error {
     max-width: 60ch;
     justify-content: center;
 }
+
+.reminder{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    border: #383838;
+    background-color: lightgreen;
+    padding: 10px;
+    border-radius: 10px;
+    align-self: center;
+}
+
+.reminder p{
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    max-width: 60ch;
+    margin: 0;
+}

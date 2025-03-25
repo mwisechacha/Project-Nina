@@ -154,7 +154,9 @@
                         <option value="IRREGULAR-ASYMMETRIC_BREAST_TISSUE">IRREGULAR-ASYMMETRIC BREAST TISSUE</option>
                     </select>
                 </div>
-
+                <div class="reminder">
+                    <p>Please Confirm if the image uploaded is a mammogram</p>
+                </div>
                 <button type="submit">Make Prediction</button>
             </div>
             
@@ -179,18 +181,6 @@
             document.querySelector('.drag-zone').style.display = 'flex';
             document.querySelector('.form-preview').style.display = 'none';
         });
-        // document.addEventListener("DOMContentLoaded", function () {
-        //     let dobInput = document.getElementById("patient_date_of_birth");
-        //     let today = new Date().toISOString().split("T")[0];
-        //     dobInput.setAttribute("max", today);
-
-        //     dobInput.addEventListener("change", function () {
-        //         if (dobInput.value > today) {
-        //             alert("Date of birth cannot be in the future.");
-        //             dobInput.value = "";
-        //         }
-        //     });
-        // });
         document.addEventListener("DOMContentLoaded", function () {
             const fileInput = document.getElementById("id_image");
             const warningMessage = document.querySelector(".file-warning");
@@ -202,7 +192,7 @@
 
                 if (!allowedExtensions.includes(fileExtension)) {
                     warningMessage.style.display = "inline";
-                    fileInput.value = "";  // Reset the file input
+                    fileInput.value = "";
                 } else {
                     warningMessage.style.display = "none";
                 }

@@ -5,10 +5,10 @@
     {% load static %}
     {% load tz %}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{% static 'css/exceptional_report.css' %}">
+    <link rel="stylesheet" href="{% static 'css/detailed_report.css' %}">
     <title>Exceptional Reports</title>
 </head>
-<body>
+<body style="padding-top: 20px;">
     <div class="header">
         <div class="btn btn-back">
             <a href="{% url 'reports' %}">Back</a>
@@ -27,8 +27,8 @@
             <a href="{% url 'generate_exceptional_report' %}">Download Report</a>
         </div>
     </div>
-    <div class="exce-body">
-        <h1><u>Disapproved Diagnosis Report for the period between {{ start_date|date:"Y-m-d" }} and {{ end_date|date:"Y-m-d" }}</u></h1>
+    <div class="detailed-body">
+        <h1 style="text-align: center;"><u>Disapproved Diagnosis Report for the period between {{ start_date|date:"Y-m-d" }} and {{ end_date|date:"Y-m-d" }}</u></h1>
         <h3>These reports highlight the cases where the radiologist's assessment 
             differed from the model's prediction. The purpose of this report is to 
             identify and analyze discrepancies to improve the accuracy and reliability

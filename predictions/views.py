@@ -224,10 +224,10 @@ def generate_report_view(request, mammogram_id):
     doc = SimpleDocTemplate(buffer, pagesize=letter)
 
     styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, spaceAfter=10, alignment=1, fontName="Helvetica-Bold"))
-    styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold", underlineWidth=1, alignment=0))
+    styles.add(ParagraphStyle(name="CenteredHeading", fontSize=18, spaceAfter=10, alignment=1, fontName="Helvetica-Bold", textColor=HexColor("#94126A")))
+    styles.add(ParagraphStyle(name="SubHeading", fontSize=14, spaceAfter=6, fontName="Helvetica-Bold", textColor=HexColor("#94126A"), underlineWidth=1, alignment=0))
     styles.add(ParagraphStyle(name="CustomBodyText", fontSize=12, leading=16, spaceAfter=10))
-    styles.add(ParagraphStyle(name="TableHeader", fontSize=12, textColor=colors.white, backColor=HexColor("#FFEEF0"), alignment=1))
+    styles.add(ParagraphStyle(name="TableHeader", fontSize=12, textColor=colors.white, backColor=HexColor("#94126A"), alignment=1))
     styles.add(ParagraphStyle(name="Date", fontSize=12, textColor=colors.grey, alignment=TA_RIGHT))
 
     elements = []
@@ -287,14 +287,14 @@ def generate_report_view(request, mammogram_id):
         ["Mass Margin", mammogram.mass_margin],
         ["Breast Density", mammogram.breast_density]
     ]
-    attributes_table = Table(attributes_data, colWidths=[200, 300])
+    attributes_table = Table(attributes_data, colWidths=[80, 300])
     attributes_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+        ('BACKGROUND', (0, 0), (-1, 0), HexColor("#94126A")),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
-        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('BACKGROUND', (0, 1), (-1, -1), HexColor("#FFEEF0")),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
     ]))
     elements.append(attributes_table)
@@ -328,7 +328,7 @@ def generate_report_view(request, mammogram_id):
     elements.append(Spacer(1, 5))
 
     # footer text
-    footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
+    footer_text = '<font color="#94126A"><b>Nina Breast Cancer Detection System</b></font>'
     elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
     doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
@@ -493,7 +493,9 @@ def weekly_summary_report(request):
         elements.append(Spacer(1, 12))
 
         # title
-        elements.append(Paragraph(f"Weekly Summary Report ({summary.week_start} - {summary.week_end})", styles['Title']))
+        elements.append(Paragraph(f"""<font color="#94126A"><b> Weekly Summary</b></font><br/> 
+                                  <font color="black">({summary.week_start} - {summary.week_end})</font>""", 
+                                  styles['Title']))
         elements.append(Spacer(1, 12))
 
         # summary table
@@ -503,17 +505,28 @@ def weekly_summary_report(request):
         ]
         table1 = Table(data, colWidths=[150, 150, 150])
         table1.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor("#94126A")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('BACKGROUND', (0, 1), (-1, -1), HexColor("#FFEEF0")),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
+
+        for i in range(1, len(data)):
+            if i % 2 == 0:
+                table1.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),  
+                ]))
+            else:
+                table1.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),
+                ]))
 
         elements.append(table1)
         elements.append(Spacer(1, 12))
 
         # daily breakdown
-        elements.append(Paragraph("Daily Breakdown", styles['CustomTitle']))
+        elements.append(Paragraph("""<font color="#94126A"><b> Daily Breakdown</b></font>""", styles['CustomTitle']))
         elements.append(Spacer(1, 12))
 
         daily_breakdown_data = [
@@ -524,17 +537,28 @@ def weekly_summary_report(request):
 
         table2 = Table(daily_breakdown_data, colWidths=[150, 150, 150, 150])
         table2.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor("#94126A")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('BACKGROUND', (0, 1), (-1, -1), HexColor("#FFEEF0")),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
+
+        for i in range(1, len(data)):
+            if i % 2 == 0:
+                table2.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),  
+                ]))
+            else:
+                table2.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),
+                ]))
 
         elements.append(table2)
         elements.append(Spacer(1, 12))
 
         # previous week summary
-        elements.append(Paragraph("Previous Week Summary", styles['CustomTitle']))
+        elements.append(Paragraph("""<font color="#94126A"><b> Previous Week Summary</b></font> """, styles['CustomTitle']))
         elements.append(Spacer(1, 12))
 
         previous_week_data = [
@@ -547,17 +571,25 @@ def weekly_summary_report(request):
         
         table3 = Table(previous_week_data, colWidths=[150, 150, 150])
         table3.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor("#94126A")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('BACKGROUND', (0, 1), (-1, -1), HexColor("#FFEEF0")),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
         ]))
 
+        for i in range(1, len(data)):
+            if i % 2 == 0:
+                table2.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),  
+                ]))
+            else:
+                table2.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),
+                ]))
+
         elements.append(table3)
         elements.append(Spacer(1, 5))
-
-        elements.append(Paragraph("Weekly Summary Report generated by Nina Breast Cancer Detection System", styles['Normal']))
-        elements.append(Spacer(1, 12))
 
         # footer
         footer_logo_path = os.path.join(settings.STATICFILES_DIRS[0], 'images', 'nina-logo.png')
@@ -565,7 +597,7 @@ def weekly_summary_report(request):
         elements.append(Spacer(1, 5))
 
         # footer text
-        footer_text = "Nina Breast Cancer Detection System | Contact: support@ninahealth.com"
+        footer_text = '<font color="#94126A"><b>Nina Breast Cancer Detection System</b></font>'
         elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
         doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
@@ -705,7 +737,11 @@ def generate_detailed_report(request):
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
         
-        elements.append(Paragraph(f"""Breast Cancer Report {filter_option.capitalize()} cases, for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})""", styles['Title']))
+        elements.append(Paragraph(
+            f"""<font color="#94126A"><b>Breast Cancer Report {filter_option.capitalize()} cases</b></font><br/>
+            <font color="black">for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})</font>""",
+            styles['Title']
+        ))
         elements.append(Spacer(1, 20))
 
         data = [
@@ -729,16 +765,26 @@ def generate_detailed_report(request):
             
         table = Table(data, colWidths=[30, 80, 40, 80, 80, 70, 65, 90, 40, 40]) 
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor("#94126A")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, -1), 10),  
             ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+            ('BACKGROUND', (0, 1), (-1, 1), HexColor("#FFEEF0")),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
-            ('VALIGN', (0, 0), (-1, -1), 'TOP'), 
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), 
         ]))
+
+        for i in range(1, len(data)):
+            if i % 2 == 0:
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),  
+                ]))
+            else:
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),
+                ]))
 
         elements.append(table)
         elements.append(Spacer(1, 15))
@@ -748,7 +794,7 @@ def generate_detailed_report(request):
         elements.append(Spacer(1, 5))
 
         # footer text
-        footer_text = "Nina Breast Cancer Detection System"
+        footer_text = '<font color="#94126A"><b>Nina Breast Cancer Detection System</b></font>'
         elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
         doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
@@ -833,8 +879,10 @@ def generate_exceptional_report(request):
         logo_description = "Nina Breast Cancer Detection System"
         elements.append(Paragraph(logo_description, ParagraphStyle(name="LogoDescription", fontSize=12, alignment=1, textColor=colors.grey)))
         elements.append(Spacer(1, 12))
-        
-        elements.append(Paragraph(f"Breast Cancer Report for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})", styles['Title']))
+
+        elements.append(Paragraph(f"""<font color="#94126A"><b>Breast Cancer Report for Disapproved cases</b></font><br/>
+                                  <font color="black"> for the period between ({start_date.strftime('%Y-%m-%d')} and {end_date.strftime('%Y-%m-%d')})</font>""", 
+                                  styles['Title']))
         elements.append(Spacer(1, 20))
 
         # fetch data
@@ -857,16 +905,26 @@ def generate_exceptional_report(request):
 
         table = Table(data, colWidths=[40, 85, 35, 80, 85, 90, 80, 80])  
         table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor("#94126A")),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
             ('FONTNAME', (0, 0), (-1, -1), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, -1), 10), 
             ('BOTTOMPADDING', (0, 0), (-1, -1), 5),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+            ('BACKGROUND', (0, 1), (-1, -1), HexColor("#FFEEF0")),
             ('GRID', (0, 0), (-1, -1), 1, colors.black),
             ('VALIGN', (0, 0), (-1, -1), 'TOP') 
         ]))
+
+        for i in range(1, len(data)):
+            if i % 2 == 0:
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),  
+                ]))
+            else:
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, i), (-1, i), HexColor("#FFEEF0")),
+                ]))
 
         elements.append(table)
         elements.append(Spacer(1, 15))
@@ -876,7 +934,7 @@ def generate_exceptional_report(request):
         elements.append(Spacer(1, 5))
 
         # footer text
-        footer_text = "Nina Breast Cancer Detection System"
+        footer_text = '<font color="#94126A"><b>Nina Breast Cancer Detection System</b></font>'
         elements.append(Paragraph(footer_text, ParagraphStyle(name="Footer", fontSize=10, alignment=1, textColor=colors.grey)))
 
         doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
