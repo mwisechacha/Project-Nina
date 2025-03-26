@@ -29,18 +29,31 @@ import os
 
 def upload_mammogram(request):
     image_id = request.GET.get('image_id')
+
+    search_query = request.GET.get('search', '').strip()
+    selected_patient = None
+    patients = []
+
+    if search_query:
+        patients = Patient.objects.filter(patient_id=search_query)
+        if patients.exists():
+            selected_patient = patients.first()
+        else:
+            print("No patient found with the given patient_id")
     
     if request.method == 'POST':
         mammogram_form = MammogramForm(request.POST, request.FILES)
         
-        first_name = request.POST.get('patient_first_name')
-        last_name = request.POST.get('patient_last_name')
-        date_of_birth = request.POST.get('patient_date_of_birth')
-        patient, created = Patient.objects.get_or_create(
-            first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
-        )
-
-        
+        selected_patient_id = request.POST.get('selected_patient_id')
+        if selected_patient_id:
+            patient = get_object_or_404(Patient, pk=selected_patient_id)
+        else:
+            first_name = request.POST.get('patient_first_name', '').strip()
+            last_name = request.POST.get('patient_last_name', '').strip()
+            date_of_birth = request.POST.get('patient_date_of_birth', '').strip()
+            patient, created = Patient.objects.get_or_create(
+                first_name=first_name, last_name=last_name, date_of_birth=date_of_birth
+            )
 
         try:
             radiologist = Radiologist.objects.get(user=request.user)
@@ -54,7 +67,12 @@ def upload_mammogram(request):
             ext = os.path.splitext(image.name)[1].lower()
             if ext not in valid_extensions:
                 messages.error(request, 'Invalid image format. Only PNG, JPG, and JPEG are allowed.')
-                return render(request, 'predictions/upload_image.html', {'mammogram_form': mammogram_form})
+                return render(request, 'predictions/upload_image.html', {
+                    'mammogram_form': mammogram_form,
+                    'patients': patients,
+                    'selected_patient': selected_patient,
+                    'search_query': search_query
+                })
 
         if mammogram_form.is_valid():  
             mammogram = mammogram_form.save(commit=False)
@@ -76,7 +94,13 @@ def upload_mammogram(request):
         mammogram_form = MammogramForm()
     else:
         mammogram_form = MammogramForm()
-    return render(request, 'predictions/upload_image.html', {'mammogram_form': mammogram_form})
+
+    return render(request, 'predictions/upload_image.html', {
+        'mammogram_form': mammogram_form,
+        'patients': patients,
+        'selected_patient': selected_patient,
+        'search_query': search_query
+    })
 
 def processing_view(request, mammogram_id):
     mammogram = get_object_or_404(Mammogram, pk=mammogram_id)
