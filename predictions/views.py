@@ -99,7 +99,7 @@ def upload_mammogram(request):
         'mammogram_form': mammogram_form,
         'patients': patients,
         'selected_patient': selected_patient,
-        'search_query': search_query
+        'search_query': search_query,
     })
 
 def processing_view(request, mammogram_id):

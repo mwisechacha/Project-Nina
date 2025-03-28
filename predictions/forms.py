@@ -36,7 +36,7 @@ class ModelMetricsForm(forms.ModelForm):
 class DisapproveForm(forms.Form):
     pathology_actual = forms.ChoiceField(choices=[('benign', 'Benign'), ('malignant', 'Malignant')], required=True)
     descriptive_actual = forms.ChoiceField(choices=[('bening', 'Benign'), ('malignant', 'Malignant')], required=True)
-    birads_actual = forms.ChoiceField(choices=[('0', 'Need additional imaging'), ('1', 'Negative'), ('2', 'Benign'), ('3', 'Probably benign'), ('4', 'Suspicious'), ('5', 'Highly suggestive of malignancy')], required=True)
+    birads_actual = forms.ChoiceField(choices=[('0', 'Need additional imaging'), ('1', 'Negative'), ('2', 'Benign'), ('3', 'Probably benign'), ('4', 'Suspicious of malignancy'), ('5', 'Highly suggestive of malignancy')], required=True)
     comments = forms.CharField(widget=forms.Textarea, required=False)
 
     

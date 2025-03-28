@@ -48,13 +48,6 @@
                 </button>
             </div>
         </form>
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <p class="{{ message.tags }}">{{ message }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
         <form id="upload-form" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {% if messages %}
@@ -104,10 +97,9 @@
             </div>
 
             <div class="form-preview" style="display: none;">
-                <img src="{% static 'images/mammogram.png' %}" alt="Mammogram" class="mammogram-image">
-                <div class="confirm-image">
-                    <input type="checkbox" id="confirm-checkbox" required>
-                    <label for="confirm-checkbox">I confirm that this is the correct mammogram.</label>
+                <img src="{{ mammogram.image.url }}" alt="Mammogram" class="mammogram-image">
+                <div class="reminder">
+                    <p>Please Confirm if the image uploaded is a mammogram</p>
                 </div>
                 <button type="button" id="change-image">Change Image</button>
                 <div class="form-group">
@@ -169,8 +161,9 @@
                         <option value="IRREGULAR-ASYMMETRIC_BREAST_TISSUE">IRREGULAR-ASYMMETRIC BREAST TISSUE</option>
                     </select>
                 </div>
-                <div class="reminder">
-                    <p>Please Confirm if the image uploaded is a mammogram</p>
+                <div class="confirm-image">
+                    <input type="checkbox" id="confirm-checkbox" required>
+                    <label for="confirm-checkbox">I confirm that this is the correct mammogram.</label>
                 </div>
                 <button type="submit">Make Prediction</button>
             </div>
